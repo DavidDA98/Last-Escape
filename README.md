@@ -3,6 +3,8 @@
 # Índice
 #### 1. Autores.
 #### 2. Descrición del Juego.
+#### 3. Categoría.
+#### 4. Mecánicas.
 
 ## 1. Autores:
 
@@ -33,6 +35,6 @@ Es un juego de supervivencia y escape y mecánicas de shooter, con característi
 Cada partida se desarrolla en 3 por así decirlo fases, que marcan el objetivo a conseguir para escapar:
   * **1ª Fase:** Cuando comienza la partida lo primero que deberán hacer los jugadores es buscar por todo el mapa unos fusibles que permitirán arreglar el generador eléctrico de emergencia, estos fusibles se pueden encontrar desperdigados en las distintas habitaciones del mapa.
   
-  * **2ª Fase:** Tras arreglar la electricidad, se activarán distintos mecanismos con los que los jugadores pueden interactuar, y lo que es más importante, se desbloqueará la sala de control del edificio, que permite a los jugadores obtener la tarjeta de salida. Para obtener esta tarjeta tendrán que buscar las identificaciones que se encuentran repartidas por las habitaciones (solo una es la correcta) y usarlas en la sala de control para saber si han acertado. Tras esto obtendran una tarjeta que les permitirá abandonar el edifico.
+  * **2ª Fase:** Tras arreglar la electricidad, se activarán distintos mecanismos con los que los jugadores pueden interactuar, y lo que es más importante, se desbloqueará la sala de control del edificio, que permite a los jugadores obtener la tarjeta de salida. Para obtener esta tarjeta, tendrán que buscar las identificaciones que se encuentran repartidas por las habitaciones, solo una es la correcta, y usarlas en la sala de control para saber si han acertado. Tras esto obtendran una tarjeta que les permitirá abandonar el edifico.
   
   * **3ª Fase:** Con la tarjeta ya en sus manos, los jugadores podrán abandonar el edificio por una de las dos puertas de salida. Cuando se llega a esta fase, una alarma alertará al resto de los jugadores que alguien ya ha conseguido la tarjeta, lo que les permitirá acabar con él para evitar su escape. El jugador que muera con la tarjeta no la perderá pero tiene que saber que los jugadores adquirirán la tarjeta de identificación para obtener así sus propias tarjetas. Cuando un jugador consigue escapar gana la partida.
