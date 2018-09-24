@@ -6,6 +6,9 @@
 #### 3. Categoría.
 #### 4. Mecánicas.
 #### 5. Controles.
+#### 6. Personajes.
+#### 7. Escenarios.
+#### 8. Armas.
 
 ## 1. Autores:
 
@@ -23,13 +26,8 @@ Last Escape es un videojuego online de escape y supervivencia en 2D con vista ce
 Es un juego de supervivencia y escape y mecánicas de shooter, con características parecidas a juegos como Dead by Daylight o Frozen Synapse.
 
 ## 4. Mecánicas:
-  * A cada jugador se le asignará uno de los cuatro personajes disponibles y competirán en un modo todos contra todos, con un número de     jugadores de 2 a 4.
-  ![personajes_1](/Imagenes/Pjs.png)
-  
+  * A cada jugador se le asignará uno de los cuatro personajes disponibles y competirán en un modo todos contra todos, con un número de     jugadores de 2 a 4.  
   * Los jugadores aparecen en un escenario(escenario estándar: edificio) por el que pueden moverse libremente en cualquier dirección.
-  
-  ![Escenario](/Imagenes/BocetoEscenarioEdificio.png)
-  
   * Los jugadores pueden equiparse con armas que encuentren repartidas por el escenario.
   * El modo de ataque básico será pelea cuerpo a cuerpo utilizando los puños del personaje.
   * Cuando se equipen armas podrá usarlas para matar al resto de jugadores, ya sea disparando o atacando con un cuchillo. Se podrá cambiar de arma y cambiar al modo cuerpo a cuerpo cuando el jugador quiera.
@@ -48,3 +46,17 @@ Cada partida se desarrolla en 3 por así decirlo fases, que marcan el objetivo a
 ## 5. Controles:
 
 ![controles](/Imagenes/Controles.png)
+
+## 6. Personajes:
+
+Cuando los jugadores se conecten a la partida se les signará aleatoriamente uno de los cuatro personajes disponibles. La única diferencia entre los personajes es visual, ninguno tendrá ventaja sobre los demás, ni habilidades específicas, ya que esto rompería el equilibrio del juego. Visualmente se sigue una estetíca minimalista con animaciones sencillas pero claras.
+![personajes_1](/Imagenes/Pjs.png)
+
+## 7. Escenarios:
+
+Para cada partida se elegirá un escenario al azar y además los objetos se distribuirán de forma también aleatoria por el escenario, evitando así que las partidas se hagan repetitivas, ya que no puede haber dos partidas iguales. 
+
+Los escenarios con los que contará el juego son: Edificio abandonado, Carcel, Hospital.
+
+![Escenario](/Imagenes/BocetoEscenarioEdificio.png)
+  
