@@ -2,7 +2,7 @@
 
 # Índice
 #### 1. Autores.
-#### 2. Descrición del Juego.
+#### 2. Descripción del Juego.
 #### 3. Categoría.
 #### 4. Mecánicas.
 #### 5. Controles.
