@@ -59,4 +59,8 @@ Para cada partida se elegirá un escenario al azar y además los objetos se dist
 Los escenarios con los que contará el juego son: Edificio abandonado, Carcel, Hospital.
 
 ![Escenario](/Imagenes/BocetoEscenarioEdificio.png)
+
+## 8. Armas:
+
+Al comienzo de la partida los jugadores solo podrán combatir contra otros jugadores usando los puños del personaje. Podrán encontrar distribuidas por el escenario diferentes armas para mejorar sus ataques.
   
