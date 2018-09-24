@@ -56,7 +56,7 @@ Cuando los jugadores se conecten a la partida se les signará aleatoriamente uno
 
 Para cada partida se elegirá un escenario al azar y además los objetos se distribuirán de forma también aleatoria por el escenario, evitando así que las partidas se hagan repetitivas, ya que no puede haber dos partidas iguales. 
 
-Los escenarios con los que contará el juego son: Edificio abandonado, Carcel, Hospital.
+Los escenarios con los que contará el juego son: Edificio abandonado, Cárcel, Hospital.
 
 ![Escenario](/Imagenes/BocetoEscenarioEdificio.png)
 
@@ -64,3 +64,9 @@ Los escenarios con los que contará el juego son: Edificio abandonado, Carcel, H
 
 Al comienzo de la partida los jugadores solo podrán combatir contra otros jugadores usando los puños del personaje. Podrán encontrar distribuidas por el escenario diferentes armas para mejorar sus ataques.
   
+* **Pistola:** es el arma más básica, dispara lento y hace un daño normal.
+* **Subfusil:** este arma dispara mas balas por segundo pero su daño es muy reducido.
+* **Fusil:** dispara un poco más rapido que la pistola y hace más daño.
+* **Ballesta:** este arma mata de un disparo pero el tiempo entre disparos es muy elevado.
+
+Todos los jugadores podrán conseguir un cuchillo con el que potenciar su ataque cuerpo a cuerpo y realizar otras acciones como forzar puertas, cortar objetos, etc.
