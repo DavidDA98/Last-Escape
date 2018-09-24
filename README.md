@@ -24,9 +24,12 @@ Es un juego de supervivencia y escape y mecánicas de shooter, con característi
 
 ## 4. Mecánicas:
   * A cada jugador se le asignará uno de los cuatro personajes disponibles y competirán en un modo todos contra todos, con un número de     jugadores de 2 a 4.
-  ![personajes_1](https://user-images.githubusercontent.com/43338705/45932880-bac69e80-bf83-11e8-8948-ed6bbdf6d691.png)
+  ![personajes_1](/Imagenes/Pjs.png)
   
   * Los jugadores aparecen en un escenario(escenario estándar: edificio) por el que pueden moverse libremente en cualquier dirección.
+  
+  ![Escenario](/Imagenes/BocetoEscenarioEdificio.png)
+  
   * Los jugadores pueden equiparse con armas que encuentren repartidas por el escenario.
   * El modo de ataque básico será pelea cuerpo a cuerpo utilizando los puños del personaje.
   * Cuando se equipen armas podrá usarlas para matar al resto de jugadores, ya sea disparando o atacando con un cuchillo. Se podrá cambiar de arma y cambiar al modo cuerpo a cuerpo cuando el jugador quiera.
@@ -44,4 +47,4 @@ Cada partida se desarrolla en 3 por así decirlo fases, que marcan el objetivo a
 
 ## 5. Controles:
 
-![controles](https://user-images.githubusercontent.com/43338705/45932772-e9dc1080-bf81-11e8-9eb4-5aadab0e2193.png)
+![controles](/Imagenes/Controles.png)
