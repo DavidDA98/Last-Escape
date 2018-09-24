@@ -1,4 +1,4 @@
-# Last-Escape
+![Logo](/Imagenes/LogoProvisional.png)
 
 # Índice
 #### 1. Autores.
@@ -20,7 +20,7 @@
 **Nickname**: FrozenBear98.
 
 ## 2. Descripción del juego:
-Last Escape es un videojuego online de escape y supervivencia en 2D con vista cenital para 2 hasta 4 jugadores. El objetivo principal del juego será salir de una determinada zona utilizando el escenario y diversos objetos del mapa. Tiene un carácter competitivo, por tanto, los jugadores se enfrentarán entre ellos para lograr escapar los primeros, pudiéndose eliminar unos a otros, pero habrá reapariciones.
+Last Escape es un videojuego online de escape y supervivencia en 2D con vista cenital para 2 hasta 4 jugadores. El objetivo principal del juego será salir de una determinada zona utilizando el escenario y diversos objetos del mapa. Tiene un carácter competitivo, por tanto, los jugadores se enfrentarán entre ellos para lograr escapar los primeros, pudiéndose eliminar unos a otros, pero habrá reapariciones. Las partidas tendrán una duración aproximada de 10 a 15 minutos.
 
 ## 3. Categoría:
 Es un juego de supervivencia y escape y mecánicas de shooter, con características parecidas a juegos como Dead by Daylight o Frozen Synapse.
