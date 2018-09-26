@@ -61,7 +61,7 @@ Para cada partida se elegirá un escenario al azar y además los objetos se dist
 
 Los escenarios con los que contará el juego son: Edificio abandonado, Cárcel, Hospital.
 
-![Escenario](/Imagenes/BocetoEscenarioEdificio.png)
+![Escenario](/Imagenes/EscenarioEdificio.png)
 
 ## 8. Armas:
 
