@@ -34,6 +34,9 @@ Es un juego de supervivencia y escape y mecánicas de shooter, con característi
   * Además de armas, el jugador podrá ir recolectando objetos que encuentre a su paso, que le ayudarán a desbloquear ciertas zonas o para interactuar con otros objetos y resolver puzzles.
   * El jugador podrá interaccionar con puertas, objetos...
   * El jugador puede moverse andando a una velocidad normal y también podrá correr.
+  * El campo de visión del jugador abarcará el alcance de una pequeña linterna que llevará desde el principio. Podrá aumentar el tamaño de dicho campo encontrando pilas o baterías repartidas por el escenario, este aumento será temportal, dependiendo de la duración de las mismas.
+  * La linterna no se podrá apagar, por tanto el resto de jugadores te verán si te acercas a ellos en cualquier dirección.
+  * Cualquier disparo realizado se escuchará en todo el escenario, y se informará al jugador del lugar del disparo mediante una notificación visual.
   * Ganará el jugador que logre escapar primero del lugar.
 
 Cada partida se desarrolla en 3 por así decirlo fases, que marcan el objetivo a conseguir para escapar:
@@ -70,3 +73,5 @@ Al comienzo de la partida los jugadores solo podrán combatir contra otros jugad
 * **Ballesta:** este arma mata de un disparo pero el tiempo entre disparos es muy elevado.
 
 Todos los jugadores podrán conseguir un cuchillo con el que potenciar su ataque cuerpo a cuerpo y realizar otras acciones como forzar puertas, cortar objetos, etc.
+
+![armas](/Imagenes/Armas.png)
