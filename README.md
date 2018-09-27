@@ -9,6 +9,7 @@
 #### 6. Personajes.
 #### 7. Escenarios.
 #### 8. Armas.
+#### 9. Matchmaking.
 
 ## 1. Autores:
 
@@ -59,7 +60,7 @@ Cuando los jugadores se conecten a la partida se les signará aleatoriamente uno
 
 Para cada partida se elegirá un escenario al azar y además los objetos se distribuirán de forma también aleatoria por el escenario, evitando así que las partidas se hagan repetitivas, ya que no puede haber dos partidas iguales. 
 
-Los escenarios con los que contará el juego son: Edificio abandonado, Cárcel, Hospital.
+Los escenarios con los que contará el juego son: Edificio de oficinas, Cárcel, Hospital.
 
 ![Escenario](/Imagenes/EscenarioEdificio.png)
 
@@ -75,3 +76,9 @@ Al comienzo de la partida los jugadores solo podrán combatir contra otros jugad
 Todos los jugadores podrán conseguir un cuchillo con el que potenciar su ataque cuerpo a cuerpo y realizar otras acciones como forzar puertas, cortar objetos, etc.
 
 ![armas](/Imagenes/Armas.png)
+
+## 9. Matchmaking:
+
+El sistema de emparejamiento de Last Escape dependerá de las victorias de cada jugador, es decir, de las veces que han escapado en las últimas partidas que haya jugado. Por ejemplo a un jugador que en las últimas 5 partidas lleve 4 o 5 escapes se le meterá en un partida con otro jugador que lleve el mismo número de escapes. Esto ocurrirá de la misma manera con jugadores con 0,1,2... escapes.
+
+Además también se tendrá en cuenta el tiempo que han tardado en escapar. De este modo se harán subgrupos dentro de los jugadores con el mismo número de victorias dependiendo del tiempo empleado. Así juntamos a jugadores que ganan rápido debido a su conocimiento pleno del juego y los separamos de los jugadores que ganan debido a su habilidad y que a lo mejor tardan un poco más debido a que no conocen los lugares donde se sitúan objetos importantes del juego o las puertas de salida, pero sobreviven por su dominio de la puntería o la estrategia.
