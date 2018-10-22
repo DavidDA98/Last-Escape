@@ -24,7 +24,7 @@ LastEscape.menuState.prototype = {
 }
 
 function botonNuevaPartida () {
-    game.state.start('levelState');
+    game.state.start('preloadLevelState');
 }
 
 function botonAyuda () {
