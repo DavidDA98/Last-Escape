@@ -91,7 +91,7 @@ function fireBullet() {
 
 
         if(bullet) {
-            bullet.reset(player1.x +40, player1.y);
+            bullet.reset(player1.x , player1.y);
             bullet.rotation = game.physics.arcade.angleToPointer(bullet);
             game.physics.arcade.moveToPointer(bullet, 800);
             bulletTime = game.time.now + 200;
