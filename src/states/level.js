@@ -1,11 +1,14 @@
-LastEscape.levelState = function(game) {
+﻿LastEscape.levelState = function(game) {
 
 }
+//Variables disparo
+var bullets;
+var bulletTime = 0;
+var fireButton;
 
 LastEscape.levelState.prototype = {
 
     preload: function() {
-        
     },
 
     create: function() {
@@ -26,11 +29,27 @@ LastEscape.levelState.prototype = {
         sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
         aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
         dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+        
+        //Disparo
+        bullets = game.add.group();
+        bullets.enableBody = true;
+        bullets.physicsBodyType = Phaser.Physics.ARCADE;
+        bullets.createMultiple(30,'bala_pistola');
+        bullets.setAll('anchor.x', 0.5);
+        bullets.setAll('outOfBoundsKill', true);
+        bullets.setAll('checkWorldBounds', true);
+        fireButton = game.input.mousePointer;
+        
     },
 
     update: function() {
         playerMovement();
         game.physics.arcade.collide(player1, pared);
+        
+        if (fireButton.isDown) {
+            fireBullet();
+        }
+        
     }
 }
 
@@ -60,5 +79,23 @@ function crearParedes () {
     pared.scale.setTo(6, 240);
     game.physics.enable(pared, Phaser.Physics.ARCADE);
     pared.body.immovable = true;
+
+}
+
+
+function fireBullet() {
+        
+    if(game.time.now > bulletTime) {
+
+        bullet = bullets.getFirstExists(false);
+
+
+        if(bullet) {
+            bullet.reset(player1.x +40, player1.y);
+            bullet.rotation = game.physics.arcade.angleToPointer(bullet);
+            game.physics.arcade.moveToPointer(bullet, 800);
+            bulletTime = game.time.now + 200;
+        }
+    }
 
 }
