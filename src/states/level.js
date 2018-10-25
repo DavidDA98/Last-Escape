@@ -3,6 +3,7 @@
 }
 //Variables disparo
 var bullets;
+var cargador = 10;
 var bulletTime = 0;
 var fireButton;
 
@@ -29,27 +30,34 @@ LastEscape.levelState.prototype = {
         sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
         aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
         dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+        lKey = game.input.keyboard.addKey(Phaser.Keyboard.L);
+        rKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
+        fireButton = game.input.mousePointer;
         
         //Disparo
         bullets = game.add.group();
         bullets.enableBody = true;
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
-        bullets.createMultiple(30,'bala_pistola');
-        bullets.setAll('anchor.x', 0.5);
-        bullets.setAll('outOfBoundsKill', true);
-        bullets.setAll('checkWorldBounds', true);
-        fireButton = game.input.mousePointer;
         
     },
 
     update: function() {
         playerMovement();
         game.physics.arcade.collide(player1, pared);
-        
+        if (cargador >0) {
         if (fireButton.isDown) {
             fireBullet();
         }
-        
+     }
+     if (lKey.isDown) {
+        bullets.createMultiple(10,'bala_pistola');
+        bullets.setAll('anchor.x', 0.5);
+        bullets.setAll('outOfBoundsKill', true);
+        bullets.setAll('checkWorldBounds', true);
+     }
+     if (rKey.isDown && cargador == 0) {
+        recargar();
+     }
     }
 }
 
@@ -93,9 +101,16 @@ function fireBullet() {
         if(bullet) {
             bullet.reset(player1.x , player1.y);
             bullet.rotation = game.physics.arcade.angleToPointer(bullet);
-            game.physics.arcade.moveToPointer(bullet, 800);
+            game.physics.arcade.moveToPointer(bullet, 400);
             bulletTime = game.time.now + 200;
+            cargador = cargador -1;
         }
+        
+    
     }
+    
 
+}
+function recargar() {
+        cargador = cargador +10;
 }
