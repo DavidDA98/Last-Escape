@@ -11,6 +11,12 @@ var fireButton;
 var mapa;
 var capa;
 
+//Variables vision
+var FOV = Math.PI/3;
+var rayos = 30;
+var longitudRayos = 120;
+var paredesBMP;
+
 LastEscape.levelState.prototype = {
 
     preload: function() {
@@ -18,7 +24,7 @@ LastEscape.levelState.prototype = {
 
     create: function() {
         game.world.setBounds(0, 0, 2920, 1920);
-        game.add.tileSprite(0, 0, 2920, 1920, 'background');
+        game.add.sprite(0, 0, 'bgOscuro');
 
         mapa = game.add.tilemap('mapa', 20, 20);
         mapa.addTilesetImage('pared');
@@ -26,13 +32,7 @@ LastEscape.levelState.prototype = {
         capa.resizeWorld();
         mapa.setCollision(0);
 
-        player1 = game.add.sprite(640, 360, 'pj1andar', 0);
-        player1.scale.setTo(0.4, 0.4);
-        player1.anchor.setTo(0.47,0.5);
-        game.physics.enable(player1, Phaser.Physics.ARCADE);
-
-        game.camera.follow(player1);
-
+        //Input
         wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
         sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
         aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
@@ -41,11 +41,26 @@ LastEscape.levelState.prototype = {
         rKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
         fireButton = game.input.mousePointer;
         
+        //Vision
+        paredesBMP = game.make.bitmapData(2920, 1920);
+		paredesBMP.draw("paredesBMP");
+        paredesBMP.update();
+        mascaraVision = this.game.add.graphics(0, 0);
+        bgClaro = game.add.sprite(0, 0, 'bgClaro');
+        bgClaro.mask = mascaraVision;
+
         //Disparo
         bullets = game.add.group();
         bullets.enableBody = true;
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
-        
+
+        //Jugador
+        player1 = game.add.sprite(640, 360, 'pj1andar', 0);
+        player1.scale.setTo(0.4, 0.4);
+        player1.anchor.setTo(0.47,0.5);
+        game.physics.enable(player1, Phaser.Physics.ARCADE);
+
+        game.camera.follow(player1, 0.5, 0.5);
     },
 
     update: function() {
@@ -63,6 +78,8 @@ LastEscape.levelState.prototype = {
         if (rKey.isDown && cargador == 0) {
             recargar();
         }
+
+        calcularVision();
     }
 }
 
@@ -71,17 +88,17 @@ function playerMovement () {
     player1.body.velocity.y = 0;
 
     if (wKey.isDown) {
-        player1.body.velocity.y = -100;
+        player1.body.velocity.y = -120;
     }
     else if (sKey.isDown) {
-        player1.body.velocity.y = 100;
+        player1.body.velocity.y = 120;
     }
 
     if (aKey.isDown) {
-        player1.body.velocity.x = -100;
+        player1.body.velocity.x = -120;
     }
     else if (dKey.isDown) {
-        player1.body.velocity.x = 100;
+        player1.body.velocity.x = 120;
     }
 
     player1.rotation = game.physics.arcade.angleToPointer(player1);
@@ -118,4 +135,32 @@ function fireBullet() {
 }
 function recargar() {
         cargador = cargador +10;
+}
+
+function calcularVision() {
+    var anguloRaton = Math.atan2(player1.y-game.input.worldY,player1.x-game.input.worldX);
+    mascaraVision.clear();
+    mascaraVision.lineStyle(2, 0xffffff, 1);
+    mascaraVision.beginFill(0xffff00);
+    mascaraVision.moveTo(player1.x,player1.y);
+    for(var i = 0; i<rayos; i++){	
+        var anguloEntreRayos = anguloRaton-(FOV/2)+(FOV/rayos)*i
+        var xFinal = player1.x;
+        var yFinal = player1.y;
+        for(var j= 1; j<=longitudRayos; j += 1){
+            var xActual = Math.round(player1.x-(2*j)*Math.cos(anguloEntreRayos));
+            var yActual = Math.round(player1.y-(2*j)*Math.sin(anguloEntreRayos));
+            if(paredesBMP.getPixel32(xActual,yActual) == 0){
+                xFinal = xActual;
+                yFinal = yActual;
+            }
+            else{
+                mascaraVision.lineTo(xFinal,yFinal);
+                break;
+            }
+        }
+        mascaraVision.lineTo(xFinal,yFinal);
+    }
+    mascaraVision.lineTo(player1.x,player1.y); 
+    mascaraVision.endFill();
 }
