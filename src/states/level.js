@@ -54,6 +54,10 @@ LastEscape.levelState.prototype = {
         bullets.enableBody = true;
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
 
+        //Sonido disparo
+        bulletSound = game.add.audio('sonido_bala_pistola',0.05);
+        reloadSound = game.add.audio('sonido_recargar_pistola',0.05);
+
         //Jugador
         player1 = game.add.sprite(640, 360, 'pj1andar', 0);
         player1.scale.setTo(0.4, 0.4);
@@ -66,6 +70,7 @@ LastEscape.levelState.prototype = {
     update: function() {
         playerMovement();
         game.physics.arcade.collide(player1, capa);
+        game.physics.arcade.collide(bullets, capa, function(bullets, capa){bullets.kill();});
         if (cargador > 0 && fireButton.isDown) {
             fireBullet();
         }
@@ -126,15 +131,16 @@ function fireBullet() {
             game.physics.arcade.moveToPointer(bullet, 400);
             bulletTime = game.time.now + 200;
             cargador = cargador -1;
+            bulletSound.play();
         }
         
     
     }
-    
 
 }
 function recargar() {
         cargador = cargador +10;
+        reloadSound.play();
 }
 
 function calcularVision() {
