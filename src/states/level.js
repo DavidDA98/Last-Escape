@@ -7,6 +7,10 @@ var cargador = 10;
 var bulletTime = 0;
 var fireButton;
 
+//Variables mapa
+var mapa;
+var capa;
+
 LastEscape.levelState.prototype = {
 
     preload: function() {
@@ -16,13 +20,16 @@ LastEscape.levelState.prototype = {
         game.world.setBounds(0, 0, 2920, 1920);
         game.add.tileSprite(0, 0, 2920, 1920, 'background');
 
-        crearParedes();
+        mapa = game.add.tilemap('mapa', 20, 20);
+        mapa.addTilesetImage('pared');
+        capa = mapa.createLayer(0);
+        capa.resizeWorld();
+        mapa.setCollision(0);
 
         player1 = game.add.sprite(640, 360, 'pj1andar', 0);
         player1.scale.setTo(0.4, 0.4);
         player1.anchor.setTo(0.47,0.5);
         game.physics.enable(player1, Phaser.Physics.ARCADE);
-        player1.body.bounce.setTo(1, 1);
 
         game.camera.follow(player1);
 
@@ -43,21 +50,19 @@ LastEscape.levelState.prototype = {
 
     update: function() {
         playerMovement();
-        game.physics.arcade.collide(player1, pared);
-        if (cargador >0) {
-        if (fireButton.isDown) {
+        game.physics.arcade.collide(player1, capa);
+        if (cargador > 0 && fireButton.isDown) {
             fireBullet();
         }
-     }
-     if (lKey.isDown) {
-        bullets.createMultiple(10,'bala_pistola');
-        bullets.setAll('anchor.x', 0.5);
-        bullets.setAll('outOfBoundsKill', true);
-        bullets.setAll('checkWorldBounds', true);
-     }
-     if (rKey.isDown && cargador == 0) {
-        recargar();
-     }
+        if (lKey.isDown) {
+            bullets.createMultiple(10,'bala_pistola');
+            bullets.setAll('anchor.x', 0.5);
+            bullets.setAll('outOfBoundsKill', true);
+            bullets.setAll('checkWorldBounds', true);
+        }
+        if (rKey.isDown && cargador == 0) {
+            recargar();
+        }
     }
 }
 
