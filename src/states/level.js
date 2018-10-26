@@ -17,6 +17,9 @@ var rayos = 30;
 var longitudRayos = 120;
 var paredesBMP;
 
+//Variables correr
+var vel = 0;
+
 LastEscape.levelState.prototype = {
 
     preload: function() {
@@ -39,6 +42,8 @@ LastEscape.levelState.prototype = {
         dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
         lKey = game.input.keyboard.addKey(Phaser.Keyboard.L);
         rKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
+        mKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
+        shiftKey = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
         fireButton = game.input.mousePointer;
         
         //Vision
@@ -93,17 +98,23 @@ function playerMovement () {
     player1.body.velocity.y = 0;
 
     if (wKey.isDown) {
-        player1.body.velocity.y = -120;
+        player1.body.velocity.y = -120 - vel;
     }
     else if (sKey.isDown) {
-        player1.body.velocity.y = 120;
+        player1.body.velocity.y = 120 + vel;
     }
 
     if (aKey.isDown) {
-        player1.body.velocity.x = -120;
+        player1.body.velocity.x = -120 - vel;
     }
     else if (dKey.isDown) {
-        player1.body.velocity.x = 120;
+        player1.body.velocity.x = 120 + vel;
+    }
+    if (shiftKey.isDown){
+        vel = 120;
+    }
+    else {
+        vel = 0;
     }
 
     player1.rotation = game.physics.arcade.angleToPointer(player1);
@@ -169,4 +180,9 @@ function calcularVision() {
     }
     mascaraVision.lineTo(player1.x,player1.y); 
     mascaraVision.endFill();
+}
+
+function correr() {
+    player1.body.velocity.x = 5;
+    player1.body.velocity.y = 5;
 }
