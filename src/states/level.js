@@ -68,14 +68,20 @@ LastEscape.levelState.prototype = {
         player1.scale.setTo(0.4, 0.4);
         player1.anchor.setTo(0.47,0.5);
         game.physics.enable(player1, Phaser.Physics.ARCADE);
+        player1.armas = new Array(2);
+        player1.items = new Array(4);
 
         game.camera.follow(player1, 0.5, 0.5);
+
+        //Interfaz
+        inventario = game.add.sprite(820, 540, 'inventario');
+        inventario.fixedToCamera = true;
     },
 
     update: function() {
         playerMovement();
         game.physics.arcade.collide(player1, capa);
-        game.physics.arcade.collide(bullets, capa, function(bullets, capa){bullets.kill();});
+        game.physics.arcade.collide(bullets, capa, function(bullets){bullets.kill();});
         if (cargador > 0 && fireButton.isDown) {
             fireBullet();
         }
@@ -98,20 +104,20 @@ function playerMovement () {
     player1.body.velocity.y = 0;
 
     if (wKey.isDown) {
-        player1.body.velocity.y = -120 - vel;
+        player1.body.velocity.y = -100 - vel;
     }
     else if (sKey.isDown) {
-        player1.body.velocity.y = 120 + vel;
+        player1.body.velocity.y = 100 + vel;
     }
 
     if (aKey.isDown) {
-        player1.body.velocity.x = -120 - vel;
+        player1.body.velocity.x = -100 - vel;
     }
     else if (dKey.isDown) {
-        player1.body.velocity.x = 120 + vel;
+        player1.body.velocity.x = 100 + vel;
     }
     if (shiftKey.isDown){
-        vel = 120;
+        vel = 50;
     }
     else {
         vel = 0;
@@ -130,12 +136,8 @@ function crearParedes () {
 
 
 function fireBullet() {
-        
     if(game.time.now > bulletTime) {
-
         bullet = bullets.getFirstExists(false);
-
-
         if(bullet) {
             bullet.reset(player1.x , player1.y);
             bullet.rotation = game.physics.arcade.angleToPointer(bullet);
@@ -144,10 +146,7 @@ function fireBullet() {
             cargador = cargador -1;
             bulletSound.play();
         }
-        
-    
     }
-
 }
 function recargar() {
         cargador = cargador +10;
@@ -182,7 +181,11 @@ function calcularVision() {
     mascaraVision.endFill();
 }
 
-function correr() {
-    player1.body.velocity.x = 5;
-    player1.body.velocity.y = 5;
+function renderInventario() {
+    for (var i = 0; i < 4; i++) {
+        objeto = player1.items[i];
+        if (objeto !== undefined) {
+            spriteItem = game.add.sprite();
+        }
+    }
 }
