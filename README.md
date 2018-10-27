@@ -10,7 +10,7 @@
 #### 7. Escenarios.
 #### 8. Armas.
 #### 9. Matchmaking.
-#### 10. Diagrama de Pantallas
+#### 10. Navegación de Pantallas
 
 ## 1. Autores:
 
@@ -20,6 +20,8 @@
 **Nickname**: EnriqueCh97. <br><br>
 **Nombre**: David Delgado Álvarez. <br>
 **Nickname**: FrozenBear98.
+
+![Logoestudio](/Imagenes/logo_estudio.png)
 
 ## 2. Descripción del juego:
 Last Escape es un videojuego online de escape y supervivencia en 2D con vista cenital para 2 hasta 4 jugadores. El objetivo principal del juego será salir de una determinada zona utilizando el escenario y diversos objetos del mapa. Tiene un carácter competitivo, por tanto, los jugadores se enfrentarán entre ellos para lograr escapar los primeros, pudiéndose eliminar unos a otros, pero habrá reapariciones. Las partidas tendrán una duración aproximada de 10 a 15 minutos.
@@ -50,7 +52,7 @@ Cada partida se desarrolla en 3 por así decirlo fases, que marcan el objetivo a
 
 ## 5. Controles:
 
-![controles](/Imagenes/Controles.png)
+![controles](/Imagenes/controles.png)
 
 ## 6. Personajes:
 
@@ -84,6 +86,8 @@ El sistema de emparejamiento de Last Escape dependerá de las victorias de cada 
 
 Además también se tendrá en cuenta el tiempo que han tardado en escapar. De este modo se harán subgrupos dentro de los jugadores con el mismo número de victorias dependiendo del tiempo empleado. Así juntamos a jugadores que ganan rápido debido a su conocimiento pleno del juego y los separamos de los jugadores que ganan debido a su habilidad y que a lo mejor tardan un poco más debido a que no conocen los lugares donde se sitúan objetos importantes del juego o las puertas de salida, pero sobreviven por su dominio de la puntería o la estrategia.
 
-## 10. Diagrama de Pantallas:
+## 10. Navegación de Pantallas:
 
-![DiagramaPantallas](/Imagenes/DiagramaDePantallas.png)
+![NavegacionPantallas](/Imagenes/navegación_pantallas.png)
+![ExplicacionPantallas1](/Imagenes/explicación_pantallas_1.png)
+![ExplicacionPantallas2](/Imagenes/explicación_pantallas_2.png)
