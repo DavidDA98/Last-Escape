@@ -194,9 +194,7 @@ function renderInventario() {
         objeto = player1.items[i];
         if (objeto !== undefined) {
             if (spriteItem[i] !== undefined) {
-                if (objeto === spriteItem[i].key) {
-                    spriteItem[i].kill();
-                }
+                spriteItem[i].kill();
             }
             spriteItem[i] = game.add.sprite(829 + 80*i, 648, objeto);
             spriteItem[i].scale.setTo(0.3, 0.3);
@@ -208,10 +206,8 @@ function renderInventario() {
 function renderArmas() {
     arma = player1.armas[0];
     if (arma !== undefined) {
-        if (spriteArma[i] !== undefined) {
-            if (arma === spriteArma[i].key) {
-                spriteArma[i].kill();
-            }
+        if (spriteArma[0] !== undefined) {
+            spriteArma[0].kill();
         }
         spriteArma[0] = game.add.sprite(1149, 608, arma);
         spriteArma[0].scale.setTo(0.3, 0.3);
@@ -220,10 +216,8 @@ function renderArmas() {
 
     arma = player1.armas[1];
     if (arma !== undefined) {
-        if (spriteArma[i] !== undefined) {
-            if (arma === spriteArma[i].key) {
-                spriteArma[i].kill();
-            }
+        if (spriteArma[1] !== undefined) {
+            spriteArma[1].kill();
         }
         spriteArma[1] = game.add.sprite(1205, 547, arma);
         spriteArma[1].scale.setTo(0.3, 0.3);
