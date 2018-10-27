@@ -33,6 +33,15 @@ var esperar4 = false;
 var spriteObjeto;
 var spriteCuadro;
 var inventarioAbierto = false;
+var listaObjetos = [
+    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
+    'fusible', 'fusible', 'fusible', 'fusible', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 
+    'identificacion1', 'identificacion2', 'identificacion3', 'identificacion4', 'identificacion5', 'identificacion6',
+    'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina',
+    'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'bala_pistola', 'bala_pistola', 'bala_pistola',
+    'bala_pistola', 'bala_pistola', 'bala_pistola', 'bala_pistola', 'bala_pistola', undefined, undefined,
+    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+];
 
 LastEscape.levelState.prototype = {
 
@@ -76,6 +85,10 @@ LastEscape.levelState.prototype = {
         bullets = game.add.group();
         bullets.enableBody = true;
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
+        bullets.createMultiple(40,'bala_pistola');
+        bullets.setAll('anchor.x', 0.5);
+        bullets.setAll('outOfBoundsKill', true);
+        bullets.setAll('checkWorldBounds', true);
 
         //Sonido disparo
         bulletSound = game.add.audio('sonido_pistola',0.05);
@@ -113,12 +126,6 @@ LastEscape.levelState.prototype = {
 
         if (cargador > 0 && fireButton.isDown) {
             fireBullet();
-        }
-        if (lKey.isDown) {
-            bullets.createMultiple(10,'bala_pistola');
-            bullets.setAll('anchor.x', 0.5);
-            bullets.setAll('outOfBoundsKill', true);
-            bullets.setAll('checkWorldBounds', true);
         }
         if (rKey.isDown && cargador == 0) {
             recargar();
@@ -221,20 +228,20 @@ function renderInventario() {
             spriteItem[i].kill();
         }
         if (objeto !== undefined) {
-            spriteItem[i] = game.add.sprite(game.camera.x + 829 + 80*i, game.camera.y + 648, objeto);
+            spriteItem[i] = game.add.sprite(829 + 80*i, 648, objeto);
             spriteItem[i].scale.setTo(0.3, 0.3);
             spriteItem[i].fixedToCamera = true;
         }
     }
 }
 
-function renderArmas() {
+/*function renderArmas() {
     arma = player1.armas[0];
     if (spriteArma[0] !== undefined) {
         spriteArma[0].kill();
     }
     if (arma !== undefined) {
-        spriteArma[0] = game.add.sprite(game.camera.x + 1149, game.camera.y + 608, arma);
+        spriteArma[0] = game.add.sprite(1149, 608, arma);
         spriteArma[0].scale.setTo(0.3, 0.3);
         spriteArma[0].fixedToCamera = true;
     }
@@ -244,11 +251,11 @@ function renderArmas() {
         spriteArma[1].kill();
     }
     if (arma !== undefined) {
-        spriteArma[1] = game.add.sprite(game.camera.x + 1205, game.camera.y + 547, arma);
+        spriteArma[1] = game.add.sprite(1205, 547, arma);
         spriteArma[1].scale.setTo(0.3, 0.3);
         spriteArma[1].fixedToCamera = true;
     }
-}
+}*/
 
 function generarInventarios(tile) {
     if(tile.index === 0) {
@@ -261,65 +268,53 @@ function generarInventarios(tile) {
 }
 
 function llenarInventarios() {
-    var listaObjetos = [
-        'ballesta', 'fusil', 'fusil', 'pistola', 'pistola', 'pistola', 'pistola', 'subfusil', 'subfusil', 'subfusil', 'subfusil', 
-        'fusible', 'fusible', 'fusible', 'fusible', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 
-        'identificacion1', 'identificacion2', 'identificacion3', 'identificacion4', 'identificacion5', 'identificacion6',
-        'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina',
-        'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'bala_pistola', 'bala_pistola', 'bala_pistola',
-        'bala_pistola', 'bala_pistola', 'bala_pistola', 'bala_pistola', 'bala_pistola', 'bala_fusil', 'bala_fusil',
-        'bala_subfusil', 'bala_subfusil', 'bala_subfusil', 'bala_subfusil', 'flecha', 'flecha', 'flecha', 'flecha', 'flecha'
-    ];
-
     listaObjetos.sort(function(a, b){return 0.5 - Math.random()});
     listaObjetos.sort(function(a, b){return 0.5 - Math.random()});
     listaObjetos.sort(function(a, b){return 0.5 - Math.random()});
 
     for (var i = 0; i < 64; i++) {
-        inventarios[i].contenido = listaObjetos[i];
+        inventarios[i].contenido = i;
     }
 }
 
 function colisionInventario(player, inventario) {
     if (eKey.isDown){
         if (!esperarE) {
-            mostrarInventario(0, inventario);
+            mostrarInventario(0, inventario.contenido);
             esperarE = true;
+        }
+    }
+
+    if (key1.isDown && inventarioAbierto){
+        if (!esperar1) {
+            mostrarInventario(1, inventario.contenido, 0);
+            esperar1 = true;
+        }
+    }
+
+    if (key2.isDown && inventarioAbierto){
+        if (!esperar2) {
+            mostrarInventario(1, inventario.contenido, 1);
+            esperar2 = true;
+        }
+    }
+
+    if (key3.isDown && inventarioAbierto){
+        if (!esperar3) {
+            mostrarInventario(1, inventario.contenido, 2);
+            esperar3 = true;
+        }
+    }
+
+    if (key4.isDown && inventarioAbierto){
+        if (!esperar4) {
+            mostrarInventario(1, inventario.contenido, 3);
+            esperar4 = true;
         }
     }
 
     if (eKey.isUp) {
         esperarE = false;
-    }
-}
-
-function controlesInventario() {
-    if (key1.isDown){
-        if (!esperar1) {
-            mostrarInventario(1, '', 0);
-            esperar1 = true;
-        }
-    }
-
-    if (key2.isDown){
-        if (!esperar2) {
-            mostrarInventario(1, '', 1);
-            esperar2 = true;
-        }
-    }
-
-    if (key3.isDown){
-        if (!esperar3) {
-            mostrarInventario(1, '', 2);
-            esperar3 = true;
-        }
-    }
-
-    if (key4.isDown){
-        if (!esperar4) {
-            mostrarInventario(1, '', 3);
-            esperar4 = true;
-        }
     }
 
     if (key1.isUp) {
@@ -339,14 +334,19 @@ function controlesInventario() {
     }
 }
 
-function mostrarInventario(modo, imagen, pos) {
+function controlesInventario() {
+    
+}
+
+function mostrarInventario(modo, indice, pos) {
     if(modo === 0) {
+        console.log(listaObjetos[indice]);
         if (!inventarioAbierto) {
             spriteCuadro = game.add.sprite(609, 329, 'cuadroInv');
             spriteCuadro.fixedToCamera = true;
 
-            if (imagen.contenido !== undefined) {
-                spriteObjeto = game.add.sprite(609, 329, imagen.contenido);
+            if (listaObjetos[indice] !== undefined) {
+                spriteObjeto = game.add.sprite(609, 329, listaObjetos[indice]);
                 spriteObjeto.scale.setTo(0.3, 0.3);
                 spriteObjeto.fixedToCamera = true;
             }
@@ -355,6 +355,7 @@ function mostrarInventario(modo, imagen, pos) {
         } else {
             spriteCuadro.kill();
             spriteObjeto.kill();
+            spriteObjeto.key = undefined;
             inventarioAbierto = false;
         }
     }
@@ -362,8 +363,22 @@ function mostrarInventario(modo, imagen, pos) {
     if(modo === 1) {
         if(player1.items[pos] === undefined) {
             player1.items[pos] = spriteObjeto.key;
-            imagen.contenido = undefined;
+            listaObjetos[indice] = undefined;
             mostrarInventario(0);
+            renderInventario();
+        } else {
+            if (listaObjetos[indice] !== undefined) {
+                listaObjetos[indice] = player1.items[pos];
+                player1.items[pos] = spriteObjeto.key;
+                spriteObjeto.kill();
+                spriteObjeto.key = undefined;
+            } else {
+                listaObjetos[indice] = player1.items[pos];
+                player1.items[pos] = undefined;
+            }
+            spriteObjeto = game.add.sprite(609, 329, listaObjetos[indice]);
+            spriteObjeto.scale.setTo(0.3, 0.3);
+            spriteObjeto.fixedToCamera = true;
             renderInventario();
         }
     }
