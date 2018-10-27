@@ -13,7 +13,7 @@ LastEscape.preloadLevelState.prototype = {
         game.load.image('paredesBMP', '/assets/images/escenario_colision_luz.png');
         game.load.image('bgOscuro', '/assets/images/escenario_edificio_oscuro.png');
         game.load.image('inventario', '/assets/images/inventario.png');
-        game.load.audio('sonido_bala_pistola', '/assets/audio/sonido_bala_pistola.mp3');
+        game.load.audio('sonido_pistola', '/assets/audio/sonido_pistola.mp3');
         game.load.audio('sonido_recargar_pistola', '/assets/audio/sonido_recargar_pistola.mp3');
 
         //Armas

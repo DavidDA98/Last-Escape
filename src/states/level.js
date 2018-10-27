@@ -64,7 +64,7 @@ LastEscape.levelState.prototype = {
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
 
         //Sonido disparo
-        bulletSound = game.add.audio('sonido_bala_pistola',0.05);
+        bulletSound = game.add.audio('sonido_pistola',0.05);
         reloadSound = game.add.audio('sonido_recargar_pistola',0.05);
 
         //Jugador
