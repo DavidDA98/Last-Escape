@@ -20,6 +20,10 @@ var paredesBMP;
 //Variables correr
 var vel = 0;
 
+//Variables inventario
+var spriteItem = new Array(4);
+var spriteArma = new Array(2);
+
 LastEscape.levelState.prototype = {
 
     preload: function() {
@@ -76,6 +80,10 @@ LastEscape.levelState.prototype = {
         //Interfaz
         inventario = game.add.sprite(820, 540, 'inventario');
         inventario.fixedToCamera = true;
+
+        player1.armas[0] = 'cuchillo';
+        spriteArma[0] = game.add.sprite(1149, 635, 'cuchillo');
+        spriteArma[0].fixedToCamera = true;
     },
 
     update: function() {
@@ -185,7 +193,40 @@ function renderInventario() {
     for (var i = 0; i < 4; i++) {
         objeto = player1.items[i];
         if (objeto !== undefined) {
-            spriteItem = game.add.sprite();
+            if (spriteItem[i] !== undefined) {
+                if (objeto === spriteItem[i].key) {
+                    spriteItem[i].kill();
+                }
+            }
+            spriteItem[i] = game.add.sprite(829 + 80*i, 648, objeto);
+            spriteItem[i].scale.setTo(0.3, 0.3);
+            spriteItem[i].fixedToCamera = true;
         }
+    }
+}
+
+function renderArmas() {
+    arma = player1.armas[0];
+    if (arma !== undefined) {
+        if (spriteArma[i] !== undefined) {
+            if (arma === spriteArma[i].key) {
+                spriteArma[i].kill();
+            }
+        }
+        spriteArma[0] = game.add.sprite(1149, 608, arma);
+        spriteArma[0].scale.setTo(0.3, 0.3);
+        spriteArma[0].fixedToCamera = true;
+    }
+
+    arma = player1.armas[1];
+    if (arma !== undefined) {
+        if (spriteArma[i] !== undefined) {
+            if (arma === spriteArma[i].key) {
+                spriteArma[i].kill();
+            }
+        }
+        spriteArma[1] = game.add.sprite(1205, 547, arma);
+        spriteArma[1].scale.setTo(0.3, 0.3);
+        spriteArma[1].fixedToCamera = true;
     }
 }
