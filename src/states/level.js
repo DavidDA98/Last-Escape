@@ -16,6 +16,7 @@ var FOV = Math.PI/3;
 var rayos = 30;
 var longitudRayos = 120;
 var paredesBMP;
+var tiempoBateria;
 
 //Variables correr
 var vel = 0;
@@ -34,14 +35,18 @@ var spriteObjeto;
 var spriteCuadro;
 var inventarioAbierto = false;
 var listaObjetos = [
-    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
-    'fusible', 'fusible', 'fusible', 'fusible', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 
+    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+    'fusible', 'fusible', 'fusible', 'fusible', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin',
     'identificacion1', 'identificacion2', 'identificacion3', 'identificacion4', 'identificacion5', 'identificacion6',
     'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina',
-    'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'bala_pistola', 'bala_pistola', 'bala_pistola',
-    'bala_pistola', 'bala_pistola', 'bala_pistola', 'bala_pistola', 'bala_pistola', undefined, undefined,
-    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+    'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'balas', 'balas', 'balas', 'balas', 'balas',
+    'balas', 'balas', 'balas', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+    undefined, undefined, undefined
 ];
+
+//Variables interfaz
+var barraVida;
+var barraBateria;
 
 LastEscape.levelState.prototype = {
 
@@ -103,6 +108,8 @@ LastEscape.levelState.prototype = {
         game.physics.enable(player1, Phaser.Physics.ARCADE);
         player1.armas = new Array(2);
         player1.items = new Array(4);
+        player1.vida = 100;
+        player1.bateria = 0;
 
         game.camera.follow(player1, 0.5, 0.5);
 
@@ -110,9 +117,24 @@ LastEscape.levelState.prototype = {
         inventarioUI = game.add.sprite(820, 540, 'inventario');
         inventarioUI.fixedToCamera = true;
 
-        player1.armas[0] = 'cuchillo';
-        spriteArma[0] = game.add.sprite(1149, 635, 'cuchillo');
+        player1.armas[0] = 'pistola';
+        spriteArma[0] = game.add.sprite(1110, 570, 'pistola');
         spriteArma[0].fixedToCamera = true;
+
+        player1.armas[1] = 'cuchillo';
+        spriteArma[1] = game.add.sprite(1205, 563, 'cuchillo');
+        spriteArma[1].scale.setTo(0.6, 0.6);
+        spriteArma[1].fixedToCamera = true;
+
+        barraVida = game.add.sprite(20, 650, 'barraVida', 10);
+        barraVida.fixedToCamera = true;
+        barraVida.animations.add('vida');
+        barraVida = barraVida.animations.getAnimation('vida');
+
+        barraBateria = game.add.sprite(20, 590, 'barraBateria', 0);
+        barraBateria.fixedToCamera = true;
+        barraBateria.animations.add('bateria');
+        barraBateria = barraBateria.animations.getAnimation('bateria');
 
         mapaInventarios = game.add.tilemap('posInventarios', 20, 20);
         mapaInventarios.forEach(generarInventarios, this, 0, 0, 146, 96);
@@ -135,12 +157,18 @@ LastEscape.levelState.prototype = {
 
         calcularVision();
 
-        if (inventarioAbierto) {
+        if (!inventarioAbierto) {
             controlesInventario();
         }
 
         if (fKey.isDown) {
             acabarPartida();
+        }
+
+        if (player1.bateria > 0 && game.time.now > tiempoBateria) {
+            player1.bateria -= 1;
+            tiempoBateria += 6666;
+            barraBateria.previous(1);
         }
     }
 }
@@ -201,6 +229,9 @@ function recargar() {
 
 function calcularVision() {
     var anguloRaton = Math.atan2(player1.y-game.input.worldY,player1.x-game.input.worldX);
+
+    longitudRayos = 120 + 5 * player1.bateria;
+
     mascaraVision.clear();
     mascaraVision.lineStyle(2, 0xffffff, 1);
     mascaraVision.beginFill(0xffff00);
@@ -341,18 +372,55 @@ function colisionInventario(player, inventario) {
 }
 
 function controlesInventario() {
-    
+    if (key1.isDown && player1.items[0] !== undefined){
+        if (!esperar1) {
+            usarItem(0);
+        }
+    }
+
+    if (key2.isDown && player1.items[1] !== undefined){
+        if (!esperar2) {
+            usarItem(1);
+        }
+    }
+
+    if (key3.isDown && player1.items[2] !== undefined){
+        if (!esperar3) {
+            usarItem(2);
+        }
+    }
+
+    if (key4.isDown && player1.items[3] !== undefined){
+        if (!esperar4) {
+            usarItem(3);
+        }
+    }
+
+    if (key1.isUp) {
+        esperar1 = false;
+    }
+
+    if (key2.isUp) {
+        esperar2 = false;
+    }
+
+    if (key3.isUp) {
+        esperar3 = false;
+    }
+
+    if (key4.isUp) {
+        esperar4 = false;
+    }
 }
 
 function mostrarInventario(modo, indice, pos) {
     if(modo === 0) {
-        console.log(listaObjetos[indice]);
         if (!inventarioAbierto) {
             spriteCuadro = game.add.sprite(609, 329, 'cuadroInv');
             spriteCuadro.fixedToCamera = true;
 
             if (listaObjetos[indice] !== undefined) {
-                spriteObjeto = game.add.sprite(609, 329, listaObjetos[indice]);
+                spriteObjeto = game.add.sprite(618, 338, listaObjetos[indice]);
                 spriteObjeto.scale.setTo(0.3, 0.3);
                 spriteObjeto.fixedToCamera = true;
             }
@@ -382,11 +450,76 @@ function mostrarInventario(modo, indice, pos) {
                 listaObjetos[indice] = player1.items[pos];
                 player1.items[pos] = undefined;
             }
-            spriteObjeto = game.add.sprite(609, 329, listaObjetos[indice]);
+            spriteObjeto = game.add.sprite(618, 338, listaObjetos[indice]);
             spriteObjeto.scale.setTo(0.3, 0.3);
             spriteObjeto.fixedToCamera = true;
             renderInventario();
         }
+    }
+}
+
+function usarItem(pos) {
+    switch(player1.items[pos]) {
+        case 'medicina':
+            if (player1.vida > 50) {
+                player1.vida = 100;
+            } else {
+                player1.vida += 50;
+            }
+            actualizarVida()
+            player1.items[pos] = undefined;
+            break;
+        case 'botiquin':
+            player1.vida = 100;
+            actualizarVida()
+            player1.items[pos] = undefined;
+            break;
+        case 'pilas':
+            player1.bateria = 9;
+            barraBateria.frame = 9;
+            tiempoBateria = game.time.now + 6666;
+            player1.items[pos] = undefined;
+            break;
+        case 'balas':
+            
+            break;
+    }
+    renderInventario();
+}
+
+function actualizarVida() {
+    if (player1.vida <= 0) {
+        barraVida.frame = 0;
+    }
+    if (player1.vida > 0 && player1.vida <= 10) {
+        barraVida.frame = 1;
+    }
+    if (player1.vida > 10 && player1.vida <= 20) {
+        barraVida.frame = 5;
+    }
+    if (player1.vida > 20 && player1.vida <= 30) {
+        barraVida.frame = 3;
+    }
+    if (player1.vida > 30 && player1.vida <= 40) {
+        barraVida.frame = 4;
+    }
+    if (player1.vida > 40 && player1.vida <= 50) {
+        barraVida.frame = 5;
+    }
+    if (player1.vida > 50 && player1.vida <= 60) {
+        barraVida.frame = 6;
+    }
+    if (player1.vida > 60 && player1.vida <= 70) {
+        barraVida.frame = 7;
+    }
+    if (player1.vida > 80 && player1.vida <= 90) {
+        barraVida.frame = 8;
+    }
+    if (player1.vida > 90 && player1.vida < 100) {
+        barraVida.frame = 9;
+    }
+    if (player1.vida === 100) {
+        barraVida.frame = 10;
     }
 }
 

@@ -26,9 +26,15 @@ LastEscape.preloadLevelState.prototype = {
         game.load.image('botiquin', '/assets/images/objetos/obj_botiquin.png');
         game.load.image('fusible', '/assets/images/objetos/obj_fusible.png');
         game.load.image('tarjeta', '/assets/images/objetos/obj_tarjeta.png');
-        game.load.image('identificacion', '/assets/images/objetos/obj_identificacion.png');
         game.load.image('medicina', '/assets/images/objetos/obj_medicina.png');
         game.load.image('pilas', '/assets/images/objetos/obj_pilas.png');
+        game.load.image('identificacion1', '/assets/images/objetos/obj_id_azul.png');
+        game.load.image('identificacion2', '/assets/images/objetos/obj_id_amarilla.png');
+        game.load.image('identificacion3', '/assets/images/objetos/obj_id_naranja.png');
+        game.load.image('identificacion4', '/assets/images/objetos/obj_id_roja.png');
+        game.load.image('identificacion5', '/assets/images/objetos/obj_id_rosa.png');
+        game.load.image('identificacion6', '/assets/images/objetos/obj_id_verde.png');
+        game.load.image('balas', '/assets/images/objetos/balas.png');
 
         //Tilemaps
         game.load.tilemap('mapa', 'assets/tilemaps/CollisionMap.csv', null, Phaser.Tilemap.CSV);
@@ -36,6 +42,8 @@ LastEscape.preloadLevelState.prototype = {
 
         //UI
         game.load.image('inventario', '/assets/images/inventario.png');
+        game.load.spritesheet('barraVida', '/assets/animations/salud.png', 464, 45);
+        game.load.spritesheet('barraBateria', '/assets/animations/linterna.png', 356, 45);
     },
 
     create: function() {
