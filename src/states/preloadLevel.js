@@ -44,6 +44,10 @@ LastEscape.preloadLevelState.prototype = {
         game.load.image('inventario', '/assets/images/inventario.png');
         game.load.spritesheet('barraVida', '/assets/animations/salud.png', 464, 45);
         game.load.spritesheet('barraBateria', '/assets/animations/linterna.png', 356, 45);
+
+        //Gameflow
+        game.load.image('luzGenerador', '/assets/images/luz_verde_generador.png');
+        game.load.image('luzSala', '/assets/images/luz_verde_control.png');
     },
 
     create: function() {

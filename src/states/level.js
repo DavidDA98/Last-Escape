@@ -4,7 +4,7 @@
 //Variables disparo
 var bullets;
 var cargador = 10;
-var cargadores = 1;
+var cargadores = 0;
 var bulletTime = 0;
 var fireButton;
 
@@ -37,17 +37,30 @@ var spriteCuadro;
 var inventarioAbierto = false;
 var listaObjetos = [
     undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
     'fusible', 'fusible', 'fusible', 'fusible', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin',
     'identificacion1', 'identificacion2', 'identificacion3', 'identificacion4', 'identificacion5', 'identificacion6',
     'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina',
     'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'balas', 'balas', 'balas', 'balas', 'balas',
-    'balas', 'balas', 'balas', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
-    undefined, undefined, undefined
+    'balas', 'balas', 'balas'
 ];
 
 //Variables interfaz
 var barraVida;
 var barraBateria;
+
+//Game Flow
+var generador;
+var generadorEncendido = false;
+var fusiblesRestantes = 4;
+var salaDeControl;
+var idCorrecta;
+var bloqueoPuertas = new Array(2);
+var salida = new Array(2);
+
+var listaIDs = [
+    'identificacion1', 'identificacion2', 'identificacion3', 'identificacion4', 'identificacion5', 'identificacion6'
+]
 
 LastEscape.levelState.prototype = {
 
@@ -111,6 +124,7 @@ LastEscape.levelState.prototype = {
         player1.items = new Array(4);
         player1.vida = 100;
         player1.bateria = 0;
+        player1.puedeSalir = false;
 
         game.camera.follow(player1, 0.5, 0.5);
 
@@ -140,6 +154,31 @@ LastEscape.levelState.prototype = {
         mapaInventarios = game.add.tilemap('posInventarios', 20, 20);
         mapaInventarios.forEach(generarInventarios, this, 0, 0, 146, 96);
         llenarInventarios();
+
+        //Gameflow
+        listaIDs.sort(function(a, b){return 0.5 - Math.random()});
+        idCorrecta = listaIDs[0];
+        generador = game.add.sprite(560, 1330, 'colisionBox');
+        game.physics.enable(generador, Phaser.Physics.ARCADE);
+        salaDeControl = game.add.sprite(1430, 1000, 'colisionBox');
+        game.physics.enable(salaDeControl, Phaser.Physics.ARCADE);
+        salaDeControl.scale.setTo(5, 1);
+
+        bloqueoPuertas[0] = game.add.sprite(440, 20, 'colisionBox');
+        bloqueoPuertas[1] = game.add.sprite(1740, 1890, 'colisionBox');
+        bloqueoPuertas[0].scale.setTo(2, 1);
+        bloqueoPuertas[1].scale.setTo(2, 1);
+        game.physics.enable(bloqueoPuertas[0], Phaser.Physics.ARCADE);
+        game.physics.enable(bloqueoPuertas[1], Phaser.Physics.ARCADE);
+        bloqueoPuertas[0].body.immovable = true;
+        bloqueoPuertas[1].body.immovable = true;
+
+        salida[0] = game.add.sprite(440, 0, 'colisionBox');
+        salida[1] = game.add.sprite(1740, 1900, 'colisionBox');
+        salida[0].scale.setTo(2, 1);
+        salida[1].scale.setTo(2, 1);
+        game.physics.enable(salida[0], Phaser.Physics.ARCADE);
+        game.physics.enable(salida[1], Phaser.Physics.ARCADE);
     },
 
     update: function() {
@@ -148,6 +187,9 @@ LastEscape.levelState.prototype = {
         game.physics.arcade.collide(player1, capa);
         game.physics.arcade.collide(bullets, capa, function(bullets){bullets.kill();});
         game.physics.arcade.overlap(player1, inventarios, colisionInventario);
+        game.physics.arcade.overlap(player1, generador, controladorGenerador);
+        game.physics.arcade.overlap(player1, salaDeControl, controladorSala);
+        game.physics.arcade.overlap(player1, salida, acabarPartida);
 
         if (cargador > 0 && fireButton.isDown) {
             fireBullet();
@@ -163,13 +205,18 @@ LastEscape.levelState.prototype = {
         }
 
         if (fKey.isDown) {
-            acabarPartida();
+            player1.vida -= 10;
+            actualizarVida();
         }
 
         if (player1.bateria > 0 && game.time.now > tiempoBateria) {
             player1.bateria -= 1;
             tiempoBateria += 6666;
             barraBateria.previous(1);
+        }
+
+        if (player1.puedeSalir === false) {
+            game.physics.arcade.collide(player1, bloqueoPuertas);
         }
     }
 }
@@ -523,6 +570,51 @@ function actualizarVida() {
     }
     if (player1.vida === 100) {
         barraVida.frame = 10;
+    }
+}
+
+function controladorGenerador() {
+    if (eKey.isDown){
+        if (!esperarE) {
+            for (var i = 0; i < 4; i++) {
+                if(player1.items[i] === 'fusible') {
+                    player1.items[i] = undefined;
+                    --fusiblesRestantes;
+                }
+            }
+            if (fusiblesRestantes === 0) {
+                generadorEncendido = true;
+                game.add.sprite(544, 1324, 'luzGenerador');
+                game.add.sprite(1309, 911, 'luzSala');
+            }
+            renderInventario();
+            esperarE = true;
+        }
+    }
+
+    if (eKey.isUp) {
+        esperarE = false;
+    }
+}
+
+function controladorSala() {
+    if (eKey.isDown){
+        if (!esperarE) {
+            if (generadorEncendido === true) {
+                if (player1.items[0] === idCorrecta || player1.items[1] === idCorrecta || 
+                    player1.items[2] === idCorrecta || player1.items[3] === idCorrecta) {
+                    tarjeta = game.add.sprite(20, 0, 'tarjeta');
+                    tarjeta.scale.setTo(0.5, 0.5);
+                    tarjeta.fixedToCamera = true;
+                    player1.puedeSalir = true;
+                }
+            }
+            esperarE = true;
+        }
+    }
+
+    if (eKey.isUp) {
+        esperarE = false;
     }
 }
 
