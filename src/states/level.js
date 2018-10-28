@@ -347,18 +347,13 @@ function fireBullet() {
             game.physics.arcade.moveToPointer(bullet, 400);
             bulletTime = game.time.now + 200;
             cargador = cargador -1;
-            if (mute === false) {
-                bulletSound.play();
-            }
-            
+            bulletSound.play();
         }
     }
 }
 function recargar() {
         cargador = cargador +10;
-        if (mute === false) {
-            reloadSound.play();
-        }
+        reloadSound.play();
         cargadores = cargadores - 1;
 }
 
