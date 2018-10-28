@@ -46,6 +46,7 @@ var listaObjetos = [
 LastEscape.levelState.prototype = {
 
     preload: function() {
+        game.load.image('resultados', '/assets/images/resultados.png');
     },
 
     create: function() {
@@ -66,6 +67,7 @@ LastEscape.levelState.prototype = {
         lKey = game.input.keyboard.addKey(Phaser.Keyboard.L);
         rKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
         eKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
+        fKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
         key1 = game.input.keyboard.addKey(Phaser.Keyboard.ONE);
         key2 = game.input.keyboard.addKey(Phaser.Keyboard.TWO);
         key3 = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
@@ -135,6 +137,10 @@ LastEscape.levelState.prototype = {
 
         if (inventarioAbierto) {
             controlesInventario();
+        }
+
+        if (fKey.isDown) {
+            acabarPartida();
         }
     }
 }
@@ -382,4 +388,8 @@ function mostrarInventario(modo, indice, pos) {
             renderInventario();
         }
     }
+}
+
+function acabarPartida () {
+    game.state.start('resultsState');
 }
