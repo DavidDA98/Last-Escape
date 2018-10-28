@@ -42,6 +42,7 @@ LastEscape.preloadState.prototype = {
         carga.animations.add('carga');
         carga2 = carga.animations.getAnimation('carga');
         carga2.play('carga', true);
+        var mute = false;
         game.state.start('titleState');
     },
 

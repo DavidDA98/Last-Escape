@@ -13,9 +13,9 @@ LastEscape.selectCharacterState.prototype = {
         game.add.tileSprite(280, 90, 720, 120, 'selec_personaje');
         atras4 = game.add.button(1050, 120, 'atras', botonAtras4, this, 1, 0);
         tb1 = game.add.button(120, 250, 'tabla_personaje', botonPersonaje1, this, 1, 0);
-        tb2 = game.add.button(400, 250, 'tabla_personaje', botonPersonaje2, this, 1, 0);
-        tb3 = game.add.button(670, 250, 'tabla_personaje', botonPersonaje3, this, 1, 0);
-        tb4 = game.add.button(950, 250, 'tabla_personaje', botonPersonaje4, this, 1, 0);
+        game.add.sprite(400, 250, 'tabla_personaje');
+        game.add.sprite(670, 250, 'tabla_personaje');
+        game.add.sprite(950, 250, 'tabla_personaje');
         game.add.tileSprite(140, 280, 139, 140, 'pj1parado');
         game.add.tileSprite(425, 280, 133, 140, 'pj2parado');
         game.add.tileSprite(690, 280, 139, 140, 'pj3parado');
@@ -33,17 +33,5 @@ function botonAtras4 () {
 }
 
 function botonPersonaje1 () {
-    game.state.start('preloadLevelState');
-}
-
-function botonPersonaje2 () {
-    game.state.start('preloadLevelState');
-}
-
-function botonPersonaje3 () {
-    game.state.start('preloadLevelState');
-}
-
-function botonPersonaje4 () {
     game.state.start('preloadLevelState');
 }

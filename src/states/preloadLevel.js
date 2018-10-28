@@ -5,7 +5,10 @@
 LastEscape.preloadLevelState.prototype = {
 
     preload: function() {
-        game.load.spritesheet('pj1andar', '/assets/animations/PJ1_andar.png', 139, 140);
+        game.load.spritesheet('pj1pistola', '/assets/animations/PJ1_pistola.png', 168, 140);
+        game.load.spritesheet('pj2pistola', '/assets/animations/PJ2_pistola.png', 168, 140);
+        game.load.spritesheet('pj3pistola', '/assets/animations/PJ3_pistola.png', 168, 140);
+        game.load.spritesheet('pj4pistola', '/assets/animations/PJ4_pistola.png', 168, 140);
         game.load.image('bgClaro', '/assets/images/escenario_edificio.png', 2920, 1920);
         game.load.image('colisionBox', '/assets/images/colision.png');
         game.load.image('bala_pistola', '/assets/images/balas/bala_pistola.png');
@@ -48,6 +51,8 @@ LastEscape.preloadLevelState.prototype = {
         //Gameflow
         game.load.image('luzGenerador', '/assets/images/luz_verde_generador.png');
         game.load.image('luzSala', '/assets/images/luz_verde_control.png');
+
+        game.load.image('test', '/assets/images/test.png');
     },
 
     create: function() {

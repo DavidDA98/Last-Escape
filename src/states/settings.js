@@ -2,8 +2,6 @@ LastEscape.settingsState = function(game) {
 
 }
 
-var mute = false;
-
 LastEscape.settingsState.prototype = {
 
     preload: function() {

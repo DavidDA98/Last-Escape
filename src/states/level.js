@@ -18,6 +18,8 @@ var rayos = 30;
 var longitudRayos = 120;
 var paredesBMP;
 var tiempoBateria;
+var anguloRaton;
+var grupoJugadores;
 
 //Variables correr
 var vel = 0;
@@ -32,6 +34,7 @@ var esperar1 = false;
 var esperar2 = false;
 var esperar3 = false;
 var esperar4 = false;
+var esperarSpace = false;
 var spriteObjeto;
 var spriteCuadro;
 var inventarioAbierto = false;
@@ -57,10 +60,17 @@ var salaDeControl;
 var idCorrecta;
 var bloqueoPuertas = new Array(2);
 var salida = new Array(2);
+var esperarF = false;
 
 var listaIDs = [
     'identificacion1', 'identificacion2', 'identificacion3', 'identificacion4', 'identificacion5', 'identificacion6'
 ]
+var spawnsX = [480, 2750, 2560, 260];
+var spawnsY = [370, 170, 1750, 1770];
+var randomIndice = [0, 1, 2, 3];
+
+var jugadorVivo = true;
+var respawnTime;
 
 LastEscape.levelState.prototype = {
 
@@ -92,6 +102,7 @@ LastEscape.levelState.prototype = {
         key3 = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
         key4 = game.input.keyboard.addKey(Phaser.Keyboard.FOUR);
         shiftKey = game.input.keyboard.addKey(Phaser.Keyboard.SHIFT);
+        spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         fireButton = game.input.mousePointer;
         
         //Vision
@@ -101,6 +112,8 @@ LastEscape.levelState.prototype = {
         mascaraVision = this.game.add.graphics(0, 0);
         bgClaro = game.add.sprite(0, 0, 'bgClaro');
         bgClaro.mask = mascaraVision;
+        mascaraVision.enableBody = true;
+        mascaraVision.physicsBodyType = Phaser.Physics.ARCADE;
 
         //Disparo
         bullets = game.add.group();
@@ -116,7 +129,8 @@ LastEscape.levelState.prototype = {
         reloadSound = game.add.audio('sonido_recargar_pistola',0.05);
 
         //Jugador
-        player1 = game.add.sprite(640, 360, 'pj1andar', 0);
+        randomIndice.sort(function(a, b){return 0.5 - Math.random()});
+        player1 = game.add.sprite(spawnsX[randomIndice[0]], spawnsY[randomIndice[0]], 'pj1pistola', 0);
         player1.scale.setTo(0.4, 0.4);
         player1.anchor.setTo(0.47,0.5);
         game.physics.enable(player1, Phaser.Physics.ARCADE);
@@ -126,7 +140,35 @@ LastEscape.levelState.prototype = {
         player1.bateria = 0;
         player1.puedeSalir = false;
 
+        player2 = game.add.sprite(spawnsX[randomIndice[1]], spawnsY[randomIndice[1]], 'pj2pistola', 0);
+        player2.scale.setTo(0.4, 0.4);
+        player2.anchor.setTo(0.47,0.5);
+        game.physics.enable(player2, Phaser.Physics.ARCADE);
+        player2.visible = false;
+
+        player3 = game.add.sprite(spawnsX[randomIndice[2]], spawnsY[randomIndice[2]], 'pj3pistola', 0);
+        player3.scale.setTo(0.4, 0.4);
+        player3.anchor.setTo(0.47,0.5);
+        game.physics.enable(player3, Phaser.Physics.ARCADE);
+        player3.visible = false;
+
+        player4 = game.add.sprite(spawnsX[randomIndice[3]], spawnsY[randomIndice[3]], 'pj4pistola', 0);
+        player4.scale.setTo(0.4, 0.4);
+        player4.anchor.setTo(0.47,0.5);
+        game.physics.enable(player4, Phaser.Physics.ARCADE);
+        player4.visible = false;
+
+        grupoJugadores = game.add.group();
+        grupoJugadores.add(player2);
+        grupoJugadores.add(player3);
+        grupoJugadores.add(player4);
+
         game.camera.follow(player1, 0.5, 0.5);
+
+        hit = game.add.sprite(0, 0, 'colisionBox');
+        hit.scale.setTo(5, 5);
+        game.physics.enable(hit, Phaser.Physics.ARCADE);
+        hit.kill();
 
         //Interfaz
         inventarioUI = game.add.sprite(820, 540, 'inventario');
@@ -184,12 +226,40 @@ LastEscape.levelState.prototype = {
     update: function() {
         playerMovement();
 
+        if (spaceKey.isDown) {
+            if (!esperarSpace) {
+                hit.revive();
+                hit.x = player1.x - 50;
+                hit.y = player1.y - 50;
+                esperarSpace = true;
+            }
+        }
+
+        if (spaceKey.isUp) {
+            hit.kill();
+            esperarSpace = false;
+        }
+
         game.physics.arcade.collide(player1, capa);
-        game.physics.arcade.collide(bullets, capa, function(bullets){bullets.kill();});
+        game.physics.arcade.collide(bullets, capa, function(bullets){
+            bullets.kill();
+        });
+        game.physics.arcade.collide(bullets, grupoJugadores, function(bullets){
+            bullets.kill();
+        });
         game.physics.arcade.overlap(player1, inventarios, colisionInventario);
         game.physics.arcade.overlap(player1, generador, controladorGenerador);
         game.physics.arcade.overlap(player1, salaDeControl, controladorSala);
         game.physics.arcade.overlap(player1, salida, acabarPartida);
+        game.physics.arcade.overlap(hit, grupoJugadores, function(p1, p2){
+            p2.vida -= 10;
+        });
+
+        /*player2.visible = false;
+        player3.visible = false;
+        player4.visible = false;
+        game.physics.arcade.overlap(player1, grupoJugadores, function(p1, p2){p2.visible = true;});
+        game.physics.arcade.overlap(mascaraVision, grupoJugadores, function(p1, p2){p2.visible = true;});*/
 
         if (cargador > 0 && fireButton.isDown) {
             fireBullet();
@@ -205,8 +275,15 @@ LastEscape.levelState.prototype = {
         }
 
         if (fKey.isDown) {
-            player1.vida -= 10;
-            actualizarVida();
+            if (!esperarF) {
+                player1.vida -= 10;
+                actualizarVida();
+                esperarF = true;
+            }
+        }
+
+        if (fKey.isUp) {
+            esperarF = false;
         }
 
         if (player1.bateria > 0 && game.time.now > tiempoBateria) {
@@ -217,6 +294,10 @@ LastEscape.levelState.prototype = {
 
         if (player1.puedeSalir === false) {
             game.physics.arcade.collide(player1, bloqueoPuertas);
+        }
+
+        if (player1.vida <= 0) {
+            jugadorMuerto();
         }
     }
 }
@@ -261,23 +342,30 @@ function fireBullet() {
     if(game.time.now > bulletTime) {
         bullet = bullets.getFirstExists(false);
         if(bullet) {
-            bullet.reset(player1.x , player1.y);
+            bullet.reset(player1.x, player1.y);
             bullet.rotation = game.physics.arcade.angleToPointer(bullet);
             game.physics.arcade.moveToPointer(bullet, 400);
             bulletTime = game.time.now + 200;
             cargador = cargador -1;
-            bulletSound.play();
+            if (mute === false) {
+                bulletSound.play();
+            }
+            
         }
     }
 }
 function recargar() {
         cargador = cargador +10;
-        reloadSound.play();
+        if (mute === false) {
+            reloadSound.play();
+        }
         cargadores = cargadores - 1;
 }
 
 function calcularVision() {
-    var anguloRaton = Math.atan2(player1.y-game.input.worldY,player1.x-game.input.worldX);
+    if (jugadorVivo) {
+        anguloRaton = Math.atan2(player1.y-game.input.worldY,player1.x-game.input.worldX);
+    }
 
     longitudRayos = 120 + 5 * player1.bateria;
 
@@ -538,39 +626,40 @@ function usarItem(pos) {
 }
 
 function actualizarVida() {
-    if (player1.vida <= 0) {
+    if (player1.vida < 10) {
         barraVida.frame = 0;
     }
-    if (player1.vida > 0 && player1.vida <= 10) {
+    if (player1.vida >= 10 && player1.vida < 20) {
         barraVida.frame = 1;
     }
-    if (player1.vida > 10 && player1.vida <= 20) {
-        barraVida.frame = 5;
+    if (player1.vida >= 20 && player1.vida < 30) {
+        barraVida.frame = 2;
     }
-    if (player1.vida > 20 && player1.vida <= 30) {
+    if (player1.vida >= 30 && player1.vida < 40) {
         barraVida.frame = 3;
     }
-    if (player1.vida > 30 && player1.vida <= 40) {
+    if (player1.vida >= 40 && player1.vida < 50) {
         barraVida.frame = 4;
     }
-    if (player1.vida > 40 && player1.vida <= 50) {
+    if (player1.vida >= 50 && player1.vida < 60) {
         barraVida.frame = 5;
     }
-    if (player1.vida > 50 && player1.vida <= 60) {
+    if (player1.vida >= 60 && player1.vida < 70) {
         barraVida.frame = 6;
     }
-    if (player1.vida > 60 && player1.vida <= 70) {
+    if (player1.vida >= 70 && player1.vida < 80) {
         barraVida.frame = 7;
     }
-    if (player1.vida > 80 && player1.vida <= 90) {
+    if (player1.vida >= 80 && player1.vida < 90) {
         barraVida.frame = 8;
     }
-    if (player1.vida > 90 && player1.vida < 100) {
+    if (player1.vida >= 90 && player1.vida < 100) {
         barraVida.frame = 9;
     }
     if (player1.vida === 100) {
         barraVida.frame = 10;
     }
+    console.log(player1.vida);
 }
 
 function controladorGenerador() {
@@ -616,6 +705,24 @@ function controladorSala() {
     if (eKey.isUp) {
         esperarE = false;
     }
+}
+
+function jugadorMuerto() {
+    if (jugadorVivo) {
+        player1.kill();
+        jugadorVivo = false
+        respawnTime = game.time.now + 5000;
+    }
+
+    if (game.time.now > respawnTime) {
+        player1.vida = 100;
+        actualizarVida();
+        player1.revive();
+        player1.x = spawnsX[randomIndice[0]];
+        player1.y = spawnsY[randomIndice[0]];
+        jugadorVivo = true;
+    }
+
 }
 
 function acabarPartida () {
