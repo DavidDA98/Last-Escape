@@ -2,6 +2,8 @@ LastEscape.preloadState = function(game) {
 
 }
 
+var carga;
+
 LastEscape.preloadState.prototype = {
 
     preload: function() {
@@ -24,7 +26,7 @@ LastEscape.preloadState.prototype = {
         game.load.image('hospital', '/assets/images/icono_hospital.png');
         game.load.image('cerrar', '/assets/images/boton_cerrar.png');
         game.load.image('delante', '/assets/images/boton_flecha.png');
-        game.load.image('atras', '/assets/images/boton_flecha_izq.png');
+        game.load.image('atras', '/assets/images/boton_atras.png');
         game.load.spritesheet('boton_sonido', '/assets/images/boton_sonido.png', 59, 59);
         game.load.image('tabla_personaje', '/assets/images/tabla_personaje.png');
         game.load.image('selec_personaje', '/assets/images/selec_personaje.png');
@@ -32,10 +34,15 @@ LastEscape.preloadState.prototype = {
         game.load.image('pj2parado', '/assets/images/PJ2_parado.png');
         game.load.image('pj3parado', '/assets/images/PJ3_parado.png');
         game.load.image('pj4parado', '/assets/images/PJ4_parado.png');
+        game.load.image('login', '/assets/images/inicio_sesion.png');
     },
 
     create: function() {
-        game.state.start('menuState');
+        carga = game.add.sprite(40, 610, 'loading', 0);
+        carga.animations.add('carga');
+        carga2 = carga.animations.getAnimation('carga');
+        carga2.play('carga', true);
+        game.state.start('titleState');
     },
 
     update: function() {
