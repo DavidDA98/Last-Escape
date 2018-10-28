@@ -26,6 +26,12 @@ LastEscape.preloadState.prototype = {
         game.load.image('delante', '/assets/images/boton_flecha.png');
         game.load.image('atras', '/assets/images/boton_flecha_izq.png');
         game.load.spritesheet('boton_sonido', '/assets/images/boton_sonido.png', 59, 59);
+        game.load.image('tabla_personaje', '/assets/images/tabla_personaje.png');
+        game.load.image('selec_personaje', '/assets/images/selec_personaje.png');
+        game.load.image('pj1parado', '/assets/images/PJ1_parado.png');
+        game.load.image('pj2parado', '/assets/images/PJ2_parado.png');
+        game.load.image('pj3parado', '/assets/images/PJ3_parado.png');
+        game.load.image('pj4parado', '/assets/images/PJ4_parado.png');
     },
 
     create: function() {

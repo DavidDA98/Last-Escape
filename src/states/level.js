@@ -4,6 +4,7 @@
 //Variables disparo
 var bullets;
 var cargador = 10;
+var cargadores = 1;
 var bulletTime = 0;
 var fireButton;
 
@@ -151,7 +152,7 @@ LastEscape.levelState.prototype = {
         if (cargador > 0 && fireButton.isDown) {
             fireBullet();
         }
-        if (rKey.isDown && cargador == 0) {
+        if (rKey.isDown && cargador == 0 && cargadores != 0) {
             recargar();
         }
 
@@ -225,6 +226,7 @@ function fireBullet() {
 function recargar() {
         cargador = cargador +10;
         reloadSound.play();
+        cargadores = cargadores - 1;
 }
 
 function calcularVision() {
@@ -481,7 +483,8 @@ function usarItem(pos) {
             player1.items[pos] = undefined;
             break;
         case 'balas':
-            
+            cargadores = cargadores + 1;
+            player1.items[pos] = undefined;
             break;
     }
     renderInventario();

@@ -24,4 +24,5 @@ function botonCerrar () {
 }
 
 function botonSonido () {
+    
 }

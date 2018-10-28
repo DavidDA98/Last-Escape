@@ -5,8 +5,6 @@ LastEscape.selectMapState = function(game) {
 LastEscape.selectMapState.prototype = {
 
     preload: function() {
-        game.load.image('tabla_personaje', '/assets/images/tabla_personaje.png');
-        game.load.image('selec_personaje', '/assets/images/selec_personaje.png');
     },
 
     create: function() {
