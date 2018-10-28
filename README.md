@@ -9,8 +9,9 @@
 #### 6. Personajes.
 #### 7. Escenarios.
 #### 8. Armas.
-#### 9. Matchmaking.
-#### 10. Navegación de Pantallas
+#### 9. Objetos.
+#### 10. Matchmaking.
+#### 11. Navegación de Pantallas
 
 ## 1. Autores:
 
@@ -33,8 +34,8 @@ Es un juego de supervivencia y escape y mecánicas de shooter, con característi
   * A cada jugador se le asignará uno de los cuatro personajes disponibles y competirán en un modo todos contra todos, con un número de     jugadores de 2 a 4.  
   * Los jugadores aparecen en un escenario(escenario estándar: edificio) por el que pueden moverse libremente en cualquier dirección.
   * Los jugadores pueden equiparse con armas que encuentren repartidas por el escenario.
-  * El modo de ataque básico será pelea cuerpo a cuerpo utilizando los puños del personaje.
-  * Cuando se equipen armas podrá usarlas para matar al resto de jugadores, ya sea disparando o atacando con un cuchillo. Se podrá cambiar de arma y cambiar al modo cuerpo a cuerpo cuando el jugador quiera.
+  * El modo de ataque básico será pelea cuerpo a cuerpo utilizando un cuchillo que llevaremos desde el principio de la partida.
+  * Cuando se equipen armas podrá usarlas para matar al resto de jugadores. Se podrá cambiar de arma y cambiar al modo cuerpo a cuerpo cuando el jugador quiera.
   * Además de armas, el jugador podrá ir recolectando objetos que encuentre a su paso, que le ayudarán a desbloquear ciertas zonas o para interactuar con otros objetos y resolver puzzles.
   * El jugador podrá interaccionar con puertas, objetos...
   * El jugador puede moverse andando a una velocidad normal y también podrá correr.
@@ -69,24 +70,34 @@ Los escenarios con los que contará el juego son: Edificio de oficinas, Cárcel,
 
 ## 8. Armas:
 
-Al comienzo de la partida los jugadores solo podrán combatir contra otros jugadores usando los puños del personaje. Podrán encontrar distribuidas por el escenario diferentes armas para mejorar sus ataques.
+Al comienzo de la partida los jugadores solo podrán combatir contra otros jugadores usando el cuchillo que tienen por defecto. Podrán encontrar distribuidas por el escenario diferentes armas para mejorar sus ataques.
   
 * **Pistola:** es el arma más básica, dispara lento y hace un daño normal.
 * **Subfusil:** este arma dispara mas balas por segundo pero su daño es muy reducido.
 * **Fusil:** dispara un poco más rapido que la pistola y hace más daño.
 * **Ballesta:** este arma mata de un disparo pero el tiempo entre disparos es muy elevado.
 
-Todos los jugadores podrán conseguir un cuchillo con el que potenciar su ataque cuerpo a cuerpo y realizar otras acciones como forzar puertas, cortar objetos, etc.
-
 ![armas](/Imagenes/Armas.png)
 
-## 9. Matchmaking:
+## 9. Objetos:
+
+Los objetos se encontraran distribuidos por todo el mapa, tanto en el suelo de las habitaciones, como en las cajoneras que se encuentran repartidas por las habitaciones.
+
+* **Fusibles:** necesarios para arreglar el generador. Serán necesarios 4 fusibles para hacer que funcione. Cualquier jugador puede llevar fusibles hasta el generador.
+* **Tarjetas de Identificación:** habrá un total de 6 tarjetas de diferentes colores, y solo una será la correcta. Los jugadores deben ir probandolas en la sala de control para obtener la tarjeta de salida.
+* **Tarjeta de Salida:** tarjeta que recibimos cuando introducimos la tarjeta de identificación correcta. Con esta tarjeta de salida podemos abrir las puertas de salida y ganar la partida.
+* **Pilas:** aumentan el campo de visión de la linterna por un tiempo limitado.
+* **Medicinas y Botiquines:** restauran la salud de nuestro personaje. El botiquin restaura la vida completamente y las medicinas solo una parte de esta.
+
+![objetos](/Imagenes/Objetos.png)
+
+## 10. Matchmaking:
 
 El sistema de emparejamiento de Last Escape dependerá de las victorias de cada jugador, es decir, de las veces que han escapado en las últimas partidas que haya jugado. Por ejemplo a un jugador que en las últimas 5 partidas lleve 4 o 5 escapes se le meterá en un partida con otro jugador que lleve el mismo número de escapes. Esto ocurrirá de la misma manera con jugadores con 0,1,2... escapes.
 
 Además también se tendrá en cuenta el tiempo que han tardado en escapar. De este modo se harán subgrupos dentro de los jugadores con el mismo número de victorias dependiendo del tiempo empleado. Así juntamos a jugadores que ganan rápido debido a su conocimiento pleno del juego y los separamos de los jugadores que ganan debido a su habilidad y que a lo mejor tardan un poco más debido a que no conocen los lugares donde se sitúan objetos importantes del juego o las puertas de salida, pero sobreviven por su dominio de la puntería o la estrategia.
 
-## 10. Navegación de Pantallas:
+## 11. Navegación de Pantallas:
 
 ![NavegacionPantallas](/Imagenes/navegación_pantallas.png)
 ![ExplicacionPantallas1](/Imagenes/explicación_pantallas_1.png)
