@@ -112,8 +112,7 @@ LastEscape.levelState.prototype = {
         mascaraVision = this.game.add.graphics(0, 0);
         bgClaro = game.add.sprite(0, 0, 'bgClaro');
         bgClaro.mask = mascaraVision;
-        mascaraVision.enableBody = true;
-        mascaraVision.physicsBodyType = Phaser.Physics.ARCADE;
+        game.physics.arcade.enable(mascaraVision);
 
         //Disparo
         bullets = game.add.group();
@@ -140,6 +139,7 @@ LastEscape.levelState.prototype = {
         player1.bateria = 0;
         player1.puedeSalir = false;
 
+        console.log(spawnsX[randomIndice[1]], spawnsY[randomIndice[1]]);
         player2 = game.add.sprite(spawnsX[randomIndice[1]], spawnsY[randomIndice[1]], 'pj2pistola', 0);
         player2.scale.setTo(0.4, 0.4);
         player2.anchor.setTo(0.47,0.5);
@@ -226,6 +226,7 @@ LastEscape.levelState.prototype = {
     update: function() {
         playerMovement();
 
+        //Golpe melee
         if (spaceKey.isDown) {
             if (!esperarSpace) {
                 hit.revive();
@@ -240,6 +241,7 @@ LastEscape.levelState.prototype = {
             esperarSpace = false;
         }
 
+        //Colisiones
         game.physics.arcade.collide(player1, capa);
         game.physics.arcade.collide(bullets, capa, function(bullets){
             bullets.kill();
@@ -255,12 +257,13 @@ LastEscape.levelState.prototype = {
             p2.vida -= 10;
         });
 
-        /*player2.visible = false;
+        player2.visible = false;
         player3.visible = false;
         player4.visible = false;
         game.physics.arcade.overlap(player1, grupoJugadores, function(p1, p2){p2.visible = true;});
-        game.physics.arcade.overlap(mascaraVision, grupoJugadores, function(p1, p2){p2.visible = true;});*/
+        game.physics.arcade.overlap(mascaraVision, grupoJugadores, function(p1, p2){p2.visible = true;});
 
+        //Arma
         if (cargador > 0 && fireButton.isDown) {
             fireBullet();
         }
@@ -329,15 +332,7 @@ function playerMovement () {
     player1.rotation = game.physics.arcade.angleToPointer(player1);
 }
 
-function crearParedes () {
-    pared = game.add.sprite(0, 0, 'pared');
-    pared.scale.setTo(6, 240);
-    game.physics.enable(pared, Phaser.Physics.ARCADE);
-    pared.body.immovable = true;
-
-}
-
-
+//Dispara una bala y establece el tiempo de espera hasta la siguiente
 function fireBullet() {
     if(game.time.now > bulletTime) {
         bullet = bullets.getFirstExists(false);
@@ -351,12 +346,14 @@ function fireBullet() {
         }
     }
 }
+
 function recargar() {
         cargador = cargador +10;
         reloadSound.play();
         cargadores = cargadores - 1;
 }
 
+//Proyecta rayos desde el jugador hasta que colisionen con las paredes, despues los une para crear una máscara
 function calcularVision() {
     if (jugadorVivo) {
         anguloRaton = Math.atan2(player1.y-game.input.worldY,player1.x-game.input.worldX);
@@ -364,10 +361,13 @@ function calcularVision() {
 
     longitudRayos = 120 + 5 * player1.bateria;
 
+    mascaraVision.x = player1.x;
+    mascaraVision.y = player1.y;
+
     mascaraVision.clear();
     mascaraVision.lineStyle(2, 0xffffff, 1);
     mascaraVision.beginFill(0xffff00);
-    mascaraVision.moveTo(player1.x,player1.y);
+    mascaraVision.moveTo(0,0);
     for(var i = 0; i<rayos; i++){	
         var anguloEntreRayos = anguloRaton-(FOV/2)+(FOV/rayos)*i
         var xFinal = player1.x;
@@ -380,16 +380,18 @@ function calcularVision() {
                 yFinal = yActual;
             }
             else{
-                mascaraVision.lineTo(xFinal,yFinal);
+                mascaraVision.lineTo(xFinal - player1.x,yFinal - player1.y);
                 break;
             }
         }
-        mascaraVision.lineTo(xFinal,yFinal);
+        mascaraVision.lineTo(xFinal - player1.x,yFinal - player1.y);
     }
-    mascaraVision.lineTo(player1.x,player1.y); 
+    mascaraVision.lineTo(0,0); 
     mascaraVision.endFill();
+    game.physics.arcade.enable(mascaraVision);
 }
 
+//Lee los datos del inventario del jugador y los muestra por pantalla
 function renderInventario() {
     for (var i = 0; i < 4; i++) {
         objeto = player1.items[i];
@@ -426,6 +428,7 @@ function renderInventario() {
     }
 }*/
 
+//Coloca todos los inventario que contienen objetos por el mapa
 function generarInventarios(tile) {
     if(tile.index === 0) {
         inv = game.add.sprite(tile.worldX, tile.worldY, 'colisionBox');
@@ -436,6 +439,7 @@ function generarInventarios(tile) {
     }
 }
 
+//Rellena los inventarios anteriormente generados
 function llenarInventarios() {
     listaObjetos.sort(function(a, b){return 0.5 - Math.random()});
     listaObjetos.sort(function(a, b){return 0.5 - Math.random()});
@@ -446,6 +450,7 @@ function llenarInventarios() {
     }
 }
 
+//Controles para interaccionar con los inventarios
 function colisionInventario(player, inventario) {
     if (eKey.isDown){
         if (!esperarE) {
@@ -503,6 +508,7 @@ function colisionInventario(player, inventario) {
     }
 }
 
+//Controles del inventario del jugador
 function controlesInventario() {
     if (key1.isDown && player1.items[0] !== undefined){
         if (!esperar1) {
@@ -545,6 +551,9 @@ function controlesInventario() {
     }
 }
 
+//Esta funcion controla la logica de los inventarios
+//El modo 0 abre o cierra el inventario, dependiendo de como este este, no requiere el parametro pos
+//El modo 1 intercambia el objeto del inventario del jugador en la posicion pos con el objeto mostrado, requiere de todos los parametros
 function mostrarInventario(modo, indice, pos) {
     if(modo === 0) {
         if (!inventarioAbierto) {
@@ -590,6 +599,7 @@ function mostrarInventario(modo, indice, pos) {
     }
 }
 
+//Esta función consume los objetos y realiza sus efectos
 function usarItem(pos) {
     switch(player1.items[pos]) {
         case 'medicina':
@@ -620,6 +630,7 @@ function usarItem(pos) {
     renderInventario();
 }
 
+//Funcion que controla la barra de vida
 function actualizarVida() {
     if (player1.vida < 10) {
         barraVida.frame = 0;
@@ -657,6 +668,7 @@ function actualizarVida() {
     console.log(player1.vida);
 }
 
+//Funcion que controla el progreso del generador
 function controladorGenerador() {
     if (eKey.isDown){
         if (!esperarE) {
@@ -681,6 +693,7 @@ function controladorGenerador() {
     }
 }
 
+//Funcion que comprueba la tarjeta valida
 function controladorSala() {
     if (eKey.isDown){
         if (!esperarE) {
@@ -702,6 +715,7 @@ function controladorSala() {
     }
 }
 
+//Funcion que hace reaparecer al jugador
 function jugadorMuerto() {
     if (jugadorVivo) {
         player1.kill();
@@ -720,6 +734,7 @@ function jugadorMuerto() {
 
 }
 
+//Funcion que se llama al salir por la puerta
 function acabarPartida () {
     game.state.start('resultsState');
 }
