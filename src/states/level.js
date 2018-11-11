@@ -20,6 +20,9 @@ var paredesBMP;
 var tiempoBateria;
 var anguloRaton;
 var grupoJugadores;
+var testP2 = true;
+var testP3 = true;
+var testP4 = true;
 
 //Variables correr
 var vel = 0;
@@ -139,7 +142,6 @@ LastEscape.levelState.prototype = {
         player1.bateria = 0;
         player1.puedeSalir = false;
 
-        console.log(spawnsX[randomIndice[1]], spawnsY[randomIndice[1]]);
         player2 = game.add.sprite(spawnsX[randomIndice[1]], spawnsY[randomIndice[1]], 'pj2pistola', 0);
         player2.scale.setTo(0.4, 0.4);
         player2.anchor.setTo(0.47,0.5);
@@ -257,11 +259,13 @@ LastEscape.levelState.prototype = {
             p2.vida -= 10;
         });
 
+        if (!game.physics.arcade.overlap(player1, inventarios, colisionInventario) && inventarioAbierto) {
+            mostrarInventario(0);
+        }
+
         player2.visible = false;
         player3.visible = false;
         player4.visible = false;
-        game.physics.arcade.overlap(player1, grupoJugadores, function(p1, p2){p2.visible = true;});
-        game.physics.arcade.overlap(mascaraVision, grupoJugadores, function(p1, p2){p2.visible = true;});
 
         //Arma
         if (cargador > 0 && fireButton.isDown) {
@@ -355,9 +359,14 @@ function recargar() {
 
 //Proyecta rayos desde el jugador hasta que colisionen con las paredes, despues los une para crear una máscara
 function calcularVision() {
+    
     if (jugadorVivo) {
         anguloRaton = Math.atan2(player1.y-game.input.worldY,player1.x-game.input.worldX);
     }
+
+    testP2 = true;
+    testP3 = true;
+    testP4 = true;
 
     longitudRayos = 120 + 5 * player1.bateria;
 
@@ -375,6 +384,7 @@ function calcularVision() {
         for(var j= 1; j<=longitudRayos; j += 1){
             var xActual = Math.round(player1.x-(2*j)*Math.cos(anguloEntreRayos));
             var yActual = Math.round(player1.y-(2*j)*Math.sin(anguloEntreRayos));
+            testPlayers(xActual, yActual);
             if(paredesBMP.getPixel32(xActual,yActual) == 0){
                 xFinal = xActual;
                 yFinal = yActual;
@@ -388,7 +398,29 @@ function calcularVision() {
     }
     mascaraVision.lineTo(0,0); 
     mascaraVision.endFill();
-    game.physics.arcade.enable(mascaraVision);
+}
+
+function testPlayers(x, y) {
+    if (testP2 == true) {
+        if (x >= player2.x - 31 && x < player2.x + 36 && y >= player2.y - 28 && y < player2.y + 29) {
+            player2.visible = true;
+            testP2 = false;
+        }
+    }
+
+    if (testP3 == true) {
+        if (x >= player3.x - 31 && x < player3.x + 36 && y >= player3.y - 28 && y < player3.y + 29) {
+            player3.visible = true;
+            testP3 = false;
+        }
+    }
+
+    if (testP4 == true) {
+        if (x >= player4.x - 31 && x < player4.x + 36 && y >= player4.y - 28 && y < player4.y + 29) {
+            player4.visible = true;
+            testP4 = false;
+        }
+    }
 }
 
 //Lee los datos del inventario del jugador y los muestra por pantalla
