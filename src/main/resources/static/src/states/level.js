@@ -42,8 +42,8 @@ var spriteObjeto;
 var spriteCuadro;
 var inventarioAbierto = false;
 var listaObjetos = [
-    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
-    undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
+    'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio',
+    'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 
     'fusible', 'fusible', 'fusible', 'fusible', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin',
     'identificacion1', 'identificacion2', 'identificacion3', 'identificacion4', 'identificacion5', 'identificacion6',
     'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina',
@@ -150,6 +150,11 @@ LastEscape.levelState.prototype = {
         player1.vida = 100;
         player1.bateria = 0;
         player1.puedeSalir = false;
+        
+        player1.items[0] = 'vacio';
+        player1.items[1] = 'vacio';
+        player1.items[2] = 'vacio';
+        player1.items[3] = 'vacio';
         
         getPlayer(function (player2Data) {
         	game.jugador2 = JSON.parse(JSON.stringify(player2Data));
@@ -331,9 +336,6 @@ LastEscape.levelState.prototype = {
         	game.player2.x = game.jugador2.x;
         	game.player2.y = game.jugador2.y;
         	game.player2.rotation = game.jugador2.rotacion;
-        	if (game.jugador2.muerto) {
-        		//console.log("Mataste a mi padre");
-        	}
         })
     }
 }
@@ -476,7 +478,7 @@ function renderInventario() {
         if (spriteItem[i] !== undefined) {
             spriteItem[i].kill();
         }
-        if (objeto !== undefined) {
+        if (objeto !== 'vacio') {
             spriteItem[i] = game.add.sprite(829 + 80*i, 648, objeto);
             spriteItem[i].scale.setTo(0.3, 0.3);
             spriteItem[i].fixedToCamera = true;
@@ -588,25 +590,25 @@ function colisionInventario(player, inventario) {
 
 //Controles del inventario del jugador
 function controlesInventario() {
-    if (key1.isDown && player1.items[0] !== undefined){
+    if (key1.isDown && player1.items[0] !== 'vacio'){
         if (!esperar1) {
             usarItem(0);
         }
     }
 
-    if (key2.isDown && player1.items[1] !== undefined){
+    if (key2.isDown && player1.items[1] !== 'vacio'){
         if (!esperar2) {
             usarItem(1);
         }
     }
 
-    if (key3.isDown && player1.items[2] !== undefined){
+    if (key3.isDown && player1.items[2] !== 'vacio'){
         if (!esperar3) {
             usarItem(2);
         }
     }
 
-    if (key4.isDown && player1.items[3] !== undefined){
+    if (key4.isDown && player1.items[3] !== 'vacio'){
         if (!esperar4) {
             usarItem(3);
         }
@@ -638,7 +640,7 @@ function mostrarInventario(modo, indice, pos) {
             spriteCuadro = game.add.sprite(609, 329, 'cuadroInv');
             spriteCuadro.fixedToCamera = true;
 
-            if (listaObjetos[indice] !== undefined) {
+            if (listaObjetos[indice] !== 'vacio') {
                 spriteObjeto = game.add.sprite(618, 338, listaObjetos[indice]);
                 spriteObjeto.scale.setTo(0.3, 0.3);
                 spriteObjeto.fixedToCamera = true;
@@ -654,20 +656,20 @@ function mostrarInventario(modo, indice, pos) {
     }
     
     if(modo === 1) {
-        if(player1.items[pos] === undefined) {
-            player1.items[pos] = spriteObjeto.key;
-            listaObjetos[indice] = undefined;
+        if(player1.items[pos] === 'vacio') {
+            player1.items[pos] = listaObjetos[indice];
+            listaObjetos[indice] = 'vacio';
             mostrarInventario(0);
             renderInventario();
         } else {
-            if (listaObjetos[indice] !== undefined) {
+            if (listaObjetos[indice] !== 'vacio') {
                 listaObjetos[indice] = player1.items[pos];
                 player1.items[pos] = spriteObjeto.key;
                 spriteObjeto.kill();
                 spriteObjeto.key = undefined;
             } else {
                 listaObjetos[indice] = player1.items[pos];
-                player1.items[pos] = undefined;
+                player1.items[pos] = 'vacio';
             }
             spriteObjeto = game.add.sprite(618, 338, listaObjetos[indice]);
             spriteObjeto.scale.setTo(0.3, 0.3);
@@ -687,22 +689,22 @@ function usarItem(pos) {
                 player1.vida += 50;
             }
             actualizarVida()
-            player1.items[pos] = undefined;
+            player1.items[pos] = 'vacio';
             break;
         case 'botiquin':
             player1.vida = 100;
             actualizarVida()
-            player1.items[pos] = undefined;
+            player1.items[pos] = 'vacio';
             break;
         case 'pilas':
             player1.bateria = 9;
             barraBateria.frame = 9;
             tiempoBateria = game.time.now + 6666;
-            player1.items[pos] = undefined;
+            player1.items[pos] = 'vacio';
             break;
         case 'balas':
             cargadores = cargadores + 1;
-            player1.items[pos] = undefined;
+            player1.items[pos] = 'vacio';
             break;
     }
     renderInventario();
@@ -751,7 +753,7 @@ function controladorGenerador() {
         if (!esperarE) {
             for (var i = 0; i < 4; i++) {
                 if(player1.items[i] === 'fusible') {
-                    player1.items[i] = undefined;
+                    player1.items[i] = 'vacio';
                     --fusiblesRestantes;
                 }
             }
@@ -796,7 +798,7 @@ function controladorSala() {
 function jugadorMuerto() {
     if (jugadorVivo) {
         player1.kill();
-        jugadorVivo = false
+        jugadorVivo = false;
         respawnTime = game.time.now + 5000;
     }
 
@@ -836,9 +838,9 @@ function putPlayer() {
 	game.jugador1.y = player1.y;
 	game.jugador1.rotacion = player1.rotation;
 	if (player1.vida >= 0) {
-		game.jugador1.muerto = true;
+		game.jugador1.muerto = 1;
 	} else {
-		game.jugador1.muerto = false;
+		game.jugador1.muerto = 0;
 	}
     $.ajax({
         method: "PUT",

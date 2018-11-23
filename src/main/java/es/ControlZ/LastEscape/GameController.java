@@ -25,6 +25,16 @@ public class GameController {
 	int[] spawnsX = {480, 2750, 2560, 260};
 	int[] spawnsY = {370, 170, 1750, 1770};
 	
+	String[] listaObjetos = {
+			"vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio",
+		    "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", 
+		    "fusible", "fusible", "fusible", "fusible", "botiquin", "botiquin", "botiquin", "botiquin", "botiquin", "botiquin",
+		    "identificacion1", "identificacion2", "identificacion3", "identificacion4", "identificacion5", "identificacion6",
+		    "medicina", "medicina", "medicina", "medicina", "medicina", "medicina", "medicina", "medicina", "medicina", "medicina",
+		    "pilas", "pilas", "pilas", "pilas", "pilas", "pilas", "pilas", "pilas", "balas", "balas", "balas", "balas", "balas",
+		    "balas", "balas", "balas"
+	};
+	
 	@GetMapping(value = "/LastEscape")
 	public Collection<Player> getPlayers() {
 		return players.values();
@@ -63,6 +73,16 @@ public class GameController {
 		if (savedPlayer != null) {
 			players.put(id, player);
 			return new ResponseEntity<>(player, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@PutMapping(value = "/LastEscape/objetos/{id}")
+	public ResponseEntity<String> updateObject(@PathVariable int id, @RequestBody String item) {
+		if (id < 64) {
+			listaObjetos[id] = item;
+			return new ResponseEntity<>(item, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}

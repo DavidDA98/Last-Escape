@@ -4,7 +4,7 @@ public class Player {
 	private long id;
 	private int x, y;
 	private float rotacion = 0;
-	private boolean muerto = false;
+	private int muerto = 0;
 	
 	Player() {
 		
@@ -42,11 +42,11 @@ public class Player {
 		this.rotacion = r;
 	}
 	
-	public boolean getMuerto() {
+	public int getMuerto() {
 		return muerto;
 	}
 	
-	public void setMuerto(boolean m) {
+	public void setMuerto(int m) {
 		this.muerto = m;
 	}
 }

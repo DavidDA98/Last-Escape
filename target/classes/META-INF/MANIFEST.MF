@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Implementation-Title: LastEscape
 Implementation-Version: 0.0.1-SNAPSHOT
-Built-By: David
+Built-By: Pili
 Implementation-Vendor-Id: es.ControlZ
-Build-Jdk: 1.8.0_162
+Build-Jdk: 1.8.0_192
 Implementation-URL: http://maven.apache.org
 Created-By: Maven Integration for Eclipse
 
