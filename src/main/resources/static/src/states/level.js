@@ -78,7 +78,11 @@ var respawnTime;
 LastEscape.levelState.prototype = {
 		
 	init: function() {
-		
+		if (game.jugador1.id == 1) {
+			game.jugador2 = {id: 2}
+		} else {
+			game.jugador2 = {id: 1}
+		}
 	},
 
     preload: function() {
@@ -136,7 +140,7 @@ LastEscape.levelState.prototype = {
 
         //Jugador
         randomIndice.sort(function(a, b){return 0.5 - Math.random()});
-        player1 = game.add.sprite(spawnsX[randomIndice[0]], spawnsY[randomIndice[0]], 'pj1pistola', 0);
+        player1 = game.add.sprite(game.jugador1.x, game.jugador1.y, 'pj1pistola', 0);
         player1.scale.setTo(0.4, 0.4);
         player1.anchor.setTo(0.47,0.5);
         walk = player1.animations.add('walk');
@@ -146,12 +150,20 @@ LastEscape.levelState.prototype = {
         player1.vida = 100;
         player1.bateria = 0;
         player1.puedeSalir = false;
-
-        player2 = game.add.sprite(spawnsX[randomIndice[1]], spawnsY[randomIndice[1]], 'pj2pistola', 0);
-        player2.scale.setTo(0.4, 0.4);
-        player2.anchor.setTo(0.47,0.5);
-        game.physics.enable(player2, Phaser.Physics.ARCADE);
-        player2.visible = false;
+        
+        getPlayer(function (player2Data) {
+        	game.jugador2 = JSON.parse(JSON.stringify(player2Data));
+        	game.player2 = game.add.sprite(game.jugador2.x, game.jugador2.y, 'pj2pistola', 0);
+        	game.player2.scale.setTo(0.4, 0.4);
+        	game.player2.anchor.setTo(0.47,0.5);
+            game.physics.enable(game.player2, Phaser.Physics.ARCADE);
+            game.player2.visible = false;
+            grupoJugadores = game.add.group();
+            grupoJugadores.add(game.player2);
+            console.log("Termine");
+        })
+        
+        
 
         /*player3 = game.add.sprite(spawnsX[randomIndice[2]], spawnsY[randomIndice[2]], 'pj3pistola', 0);
         player3.scale.setTo(0.4, 0.4);
@@ -164,9 +176,8 @@ LastEscape.levelState.prototype = {
         player4.anchor.setTo(0.47,0.5);
         game.physics.enable(player4, Phaser.Physics.ARCADE);
         player4.visible = false;*/
-
-        grupoJugadores = game.add.group();
-        grupoJugadores.add(player2);
+        
+        
         //grupoJugadores.add(player3);
         //grupoJugadores.add(player4);
 
@@ -243,7 +254,7 @@ LastEscape.levelState.prototype = {
             }
         }
 
-        if (spaceKey.isUp) {
+        if (spaceKey.isUp && esperarSpace) {
             hit.kill();
             esperarSpace = false;
         }
@@ -267,10 +278,12 @@ LastEscape.levelState.prototype = {
         if (!game.physics.arcade.overlap(player1, inventarios, colisionInventario) && inventarioAbierto) {
             mostrarInventario(0);
         }
-
-        player2.visible = false;
-        player3.visible = false;
-        player4.visible = false;
+        
+        if (game.player2) {
+        	game.player2.visible = false;
+        }
+        //player3.visible = false;
+        //player4.visible = false;
 
         //Arma
         if (cargador > 0 && fireButton.isDown) {
@@ -311,6 +324,17 @@ LastEscape.levelState.prototype = {
         if (player1.vida <= 0) {
             jugadorMuerto();
         }
+        
+        putPlayer();
+        getPlayer( function (updatePlayer2) {
+        	game.jugador2 = JSON.parse(JSON.stringify(updatePlayer2));
+        	game.player2.x = game.jugador2.x;
+        	game.player2.y = game.jugador2.y;
+        	game.player2.rotation = game.jugador2.rotacion;
+        	if (game.jugador2.muerto) {
+        		//console.log("Mataste a mi padre");
+        	}
+        })
     }
 }
 
@@ -424,13 +448,13 @@ function calcularVision() {
 
 function testPlayers(x, y) {
     if (testP2 == true) {
-        if (x >= player2.x - 31 && x < player2.x + 36 && y >= player2.y - 28 && y < player2.y + 29) {
-            player2.visible = true;
+        if (x >= game.player2.x - 31 && x < game.player2.x + 36 && y >= game.player2.y - 28 && y < game.player2.y + 29) {
+        	game.player2.visible = true;
             testP2 = false;
         }
     }
 
-    if (testP3 == true) {
+    /*if (testP3 == true) {
         if (x >= player3.x - 31 && x < player3.x + 36 && y >= player3.y - 28 && y < player3.y + 29) {
             player3.visible = true;
             testP3 = false;
@@ -442,7 +466,7 @@ function testPlayers(x, y) {
             player4.visible = true;
             testP4 = false;
         }
-    }
+    }*/
 }
 
 //Lee los datos del inventario del jugador y los muestra por pantalla
@@ -791,3 +815,43 @@ function jugadorMuerto() {
 function acabarPartida () {
     game.state.start('resultsState');
 }
+
+function getPlayer(callback) {
+    $.ajax({
+        method: "GET",
+        url: window.location.href + 'LastEscape/' + game.jugador2.id,
+        async: false,
+        processData: false,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).done(function (data) {
+        game.jugador2 = JSON.parse(JSON.stringify(data));
+        callback(data);
+    })
+}
+
+function putPlayer() {
+	game.jugador1.x = player1.x;
+	game.jugador1.y = player1.y;
+	game.jugador1.rotacion = player1.rotation;
+	if (player1.vida >= 0) {
+		game.jugador1.muerto = true;
+	} else {
+		game.jugador1.muerto = false;
+	}
+    $.ajax({
+        method: "PUT",
+        url: window.location.href + 'LastEscape/' + game.jugador1.id,
+        data: JSON.stringify(game.jugador1),
+        processData: false,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).done(function (data) {
+    	
+    })
+}
+
+
+

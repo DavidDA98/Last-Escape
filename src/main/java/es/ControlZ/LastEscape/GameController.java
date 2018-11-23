@@ -22,6 +22,9 @@ public class GameController {
 	Map<Long, Player> players = new ConcurrentHashMap<>();
 	AtomicLong nextId = new AtomicLong(0);
 	
+	int[] spawnsX = {480, 2750, 2560, 260};
+	int[] spawnsY = {370, 170, 1750, 1770};
+	
 	@GetMapping(value = "/LastEscape")
 	public Collection<Player> getPlayers() {
 		return players.values();
@@ -33,7 +36,38 @@ public class GameController {
 		Player player = new Player();
 		long id = nextId.incrementAndGet();
 		player.setId(id);
+		if (id == 1) {
+			player.setX(spawnsX[0]);
+			player.setY(spawnsY[0]);
+		} else {
+			player.setX(spawnsX[1]);
+			player.setY(spawnsY[1]);
+		}
 		players.put(player.getId(), player);
 		return player;
 	}
+	
+	@GetMapping(value = "/LastEscape/{id}")
+	public ResponseEntity<Player> getPlayer(@PathVariable long id) {
+		Player player = players.get(id);
+		if (player != null) {
+			return new ResponseEntity<>(player, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@PutMapping(value = "/LastEscape/{id}")
+	public ResponseEntity<Player> updatePlayer(@PathVariable long id, @RequestBody Player player) {
+		Player savedPlayer = players.get(player.getId());
+		if (savedPlayer != null) {
+			players.put(id, player);
+			return new ResponseEntity<>(player, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
 }
+
+
+

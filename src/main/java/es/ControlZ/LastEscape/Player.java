@@ -3,8 +3,8 @@ package es.ControlZ.LastEscape;
 public class Player {
 	private long id;
 	private int x, y;
-	private float rotacion;
-	private boolean muerto;
+	private float rotacion = 0;
+	private boolean muerto = false;
 	
 	Player() {
 		
