@@ -56,10 +56,9 @@ LastEscape.preloadLevelState.prototype = {
     },
 
     create: function() {
-        carga = game.add.sprite(40, 610, 'loading', 0);
-        carga.animations.add('carga');
-        carga2 = carga.animations.getAnimation('carga');
-        carga2.play('carga', true);
+        carga = game.add.sprite(40, 610, 'loading');
+		carga.animations.add('loading');
+		carga.animations.play('loading', 10, true);
         game.state.start('levelState');
     },
 

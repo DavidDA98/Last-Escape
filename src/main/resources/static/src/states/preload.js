@@ -35,13 +35,13 @@ LastEscape.preloadState.prototype = {
         game.load.image('pj3parado', '/assets/images/PJ3_parado.png');
         game.load.image('pj4parado', '/assets/images/PJ4_parado.png');
         game.load.image('login', '/assets/images/inicio_sesion.png');
+        game.load.image('esperando_jugador', '/assets/images/esperando_jugador.png');
     },
 
     create: function() {
-        carga = game.add.sprite(40, 610, 'loading', 0);
-        carga.animations.add('carga');
-        carga2 = carga.animations.getAnimation('carga');
-        carga2.play('carga', true);
+        carga = game.add.sprite(40, 610, 'loading');
+		carga.animations.add('loading');
+		carga.animations.play('loading', 10, true);
         var mute = false;
         game.state.start('titleState');
     },
