@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,8 @@ public class GameController {
 	Map<Long, Player> players = new ConcurrentHashMap<>();
 	AtomicLong nextId = new AtomicLong(0);
 	
+	Shot[] disparos = {new Shot(), new Shot()};
+	
 	int[] spawnsX = {480, 2750, 2560, 260};
 	int[] spawnsY = {370, 170, 1750, 1770};
 	
@@ -34,6 +37,12 @@ public class GameController {
 		    "pilas", "pilas", "pilas", "pilas", "pilas", "pilas", "pilas", "pilas", "balas", "balas", "balas", "balas", "balas",
 		    "balas", "balas", "balas"
 	};
+	
+	String[] listaIDs = {
+			"identificacion1", "identificacion2", "identificacion3", "identificacion4", "identificacion5", "identificacion6"
+	};
+	
+	int fusiblesRestantes = 4;
 	
 	@GetMapping(value = "/LastEscape")
 	public Collection<Player> getPlayers() {
@@ -52,6 +61,9 @@ public class GameController {
 		} else {
 			player.setX(spawnsX[1]);
 			player.setY(spawnsY[1]);
+			//mezclarArray(listaObjetos);
+			//mezclarArray(listaObjetos);
+			//mezclarArray(listaObjetos);
 		}
 		players.put(player.getId(), player);
 		return player;
@@ -86,6 +98,76 @@ public class GameController {
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+	}
+	
+	@GetMapping(value = "/LastEscape/objetos")
+	public String[] getItems() {
+		return listaObjetos;
+	}
+	
+	@PutMapping(value = "/LastEscape/disparo/{id}")
+	public ResponseEntity<Shot> updateShot(@PathVariable long id, @RequestBody Shot d) {
+		if (id == 1) {
+			disparos[0] = d;
+			disparos[0].setDisparo(1);
+			return new ResponseEntity<>(d, HttpStatus.OK);
+		} else if (id == 2 ){
+			disparos[1] = d;
+			disparos[1].setDisparo(1);
+			return new ResponseEntity<>(d, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@GetMapping(value = "/LastEscape/disparo/{id}")
+	public ResponseEntity<Shot> getShot(@PathVariable long id) {
+		Shot s = new Shot();
+		if (id == 1) {
+			s.setX(disparos[0].getX());
+			s.setY(disparos[0].getY());
+			s.setDisparo(disparos[0].getDisparo());
+			disparos[0].setDisparo(0);
+			return new ResponseEntity<>(s, HttpStatus.OK);
+		} else if (id == 2 ){
+			s.setX(disparos[1].getX());
+			s.setY(disparos[1].getY());
+			s.setDisparo(disparos[1].getDisparo());
+			disparos[1].setDisparo(0);
+			return new ResponseEntity<>(s, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@GetMapping(value = "/LastEscape/id")
+	public String getID() {
+		return listaIDs[ThreadLocalRandom.current().nextInt(1, 7)];
+	}
+	
+	@PutMapping(value = "/LastEscape/fusible")
+	public ResponseEntity<String> restarFusible() {
+		if (fusiblesRestantes > 0) {
+			fusiblesRestantes--;
+			return new ResponseEntity<>("", HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@GetMapping(value = "/LastEscape/fusible")
+	public int getFusibles() {
+		return fusiblesRestantes;
+	}
+	
+	static void mezclarArray(String[] ar) {
+	    for (int i = ar.length - 1; i > 0; i--) {
+		    Random rnd = ThreadLocalRandom.current();
+		    int indice = rnd.nextInt(i + 1);
+		    String s = ar[indice];
+		    ar[indice] = ar[i];
+		    ar[i] = s;
+	    }
 	}
 }
 

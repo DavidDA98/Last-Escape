@@ -41,15 +41,7 @@ var esperarSpace = false;
 var spriteObjeto;
 var spriteCuadro;
 var inventarioAbierto = false;
-var listaObjetos = [
-    'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio',
-    'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 'vacio', 
-    'fusible', 'fusible', 'fusible', 'fusible', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin', 'botiquin',
-    'identificacion1', 'identificacion2', 'identificacion3', 'identificacion4', 'identificacion5', 'identificacion6',
-    'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina', 'medicina',
-    'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'pilas', 'balas', 'balas', 'balas', 'balas', 'balas',
-    'balas', 'balas', 'balas'
-];
+var listaObjetos = [];
 
 //Variables interfaz
 var barraVida;
@@ -65,12 +57,8 @@ var bloqueoPuertas = new Array(2);
 var salida = new Array(2);
 var esperarF = false;
 
-var listaIDs = [
-    'identificacion1', 'identificacion2', 'identificacion3', 'identificacion4', 'identificacion5', 'identificacion6'
-]
-var spawnsX = [480, 2750, 2560, 260];
-var spawnsY = [370, 170, 1750, 1770];
-var randomIndice = [0, 1, 2, 3];
+var spawnX;
+var spawnY;
 
 var jugadorVivo = true;
 var respawnTime;
@@ -83,6 +71,10 @@ LastEscape.levelState.prototype = {
 		} else {
 			game.jugador2 = {id: 1}
 		}
+		
+		getItems(function (array){
+			listaObjetos = array;
+		});
 	},
 
     preload: function() {
@@ -139,7 +131,8 @@ LastEscape.levelState.prototype = {
         reloadSound = game.add.audio('sonido_recargar_pistola',0.05);
 
         //Jugador
-        randomIndice.sort(function(a, b){return 0.5 - Math.random()});
+        spawnX = game.jugador1.x;
+        spawnY = game.jugador1.y;
         player1 = game.add.sprite(game.jugador1.x, game.jugador1.y, 'pj1pistola', 0);
         player1.scale.setTo(0.4, 0.4);
         player1.anchor.setTo(0.47,0.5);
@@ -156,7 +149,7 @@ LastEscape.levelState.prototype = {
         player1.items[2] = 'vacio';
         player1.items[3] = 'vacio';
         
-        getPlayer(function (player2Data) {
+        getPlayerFirstTime(function (player2Data) {
         	game.jugador2 = JSON.parse(JSON.stringify(player2Data));
         	game.player2 = game.add.sprite(game.jugador2.x, game.jugador2.y, 'pj2pistola', 0);
         	game.player2.scale.setTo(0.4, 0.4);
@@ -221,8 +214,9 @@ LastEscape.levelState.prototype = {
         llenarInventarios();
 
         //Gameflow
-        listaIDs.sort(function(a, b){return 0.5 - Math.random()});
-        idCorrecta = listaIDs[0];
+        getID(function (data) {
+            idCorrecta = data;
+        });
         generador = game.add.sprite(560, 1330, 'colisionBox');
         game.physics.enable(generador, Phaser.Physics.ARCADE);
         salaDeControl = game.add.sprite(1430, 1000, 'colisionBox');
@@ -269,13 +263,17 @@ LastEscape.levelState.prototype = {
         game.physics.arcade.collide(bullets, capa, function(bullets){
             bullets.kill();
         });
+        game.physics.arcade.collide(bullets, player1, function(p, bullets){
+            player1.vida -= 40;
+            actualizarVida();
+            bullets.kill();
+        });
         game.physics.arcade.collide(bullets, grupoJugadores, function(bullets){
             bullets.kill();
         });
         game.physics.arcade.overlap(player1, inventarios, colisionInventario);
         game.physics.arcade.overlap(player1, generador, controladorGenerador);
         game.physics.arcade.overlap(player1, salaDeControl, controladorSala);
-        game.physics.arcade.overlap(player1, salida, acabarPartida);
         game.physics.arcade.overlap(hit, grupoJugadores, function(p1, p2){
             p2.vida -= 10;
         });
@@ -291,7 +289,7 @@ LastEscape.levelState.prototype = {
         //player4.visible = false;
 
         //Arma
-        if (cargador > 0 && fireButton.isDown) {
+        if (cargador > 0 && fireButton.isDown && jugadorVivo) {
             fireBullet();
         }
         if (rKey.isDown && cargador == 0 && cargadores != 0) {
@@ -302,18 +300,6 @@ LastEscape.levelState.prototype = {
 
         if (!inventarioAbierto) {
             controlesInventario();
-        }
-
-        if (fKey.isDown) {
-            if (!esperarF) {
-                player1.vida -= 10;
-                actualizarVida();
-                esperarF = true;
-            }
-        }
-
-        if (fKey.isUp) {
-            esperarF = false;
         }
 
         if (player1.bateria > 0 && game.time.now > tiempoBateria) {
@@ -329,14 +315,39 @@ LastEscape.levelState.prototype = {
         if (player1.vida <= 0) {
             jugadorMuerto();
         }
+
+        if (!generadorEncendido) {
+            getFusibles(function(data) {
+                fusiblesRestantes = data;
+                if (fusiblesRestantes === 0) {
+                    generadorEncendido = true;
+                    game.add.sprite(544, 1324, 'luzGenerador');
+                    game.add.sprite(1309, 911, 'luzSala');
+                }
+            });
+        }
         
+        //Subimos nuestro jugador y actualizamos jugador enemigo e inventarios
         putPlayer();
         getPlayer( function (updatePlayer2) {
         	game.jugador2 = JSON.parse(JSON.stringify(updatePlayer2));
         	game.player2.x = game.jugador2.x;
         	game.player2.y = game.jugador2.y;
         	game.player2.rotation = game.jugador2.rotacion;
-        })
+        });
+        getItems(function (array){
+			listaObjetos = array;
+        });
+        
+        getDisparo(function (datos){
+            game.disparo = JSON.parse(JSON.stringify(datos));
+            if (game.disparo.disparo == 1){
+                fireBulletJ2(game.disparo.x, game.disparo.y);
+            }
+        });
+
+        game.physics.arcade.overlap(player1, salida, acabarPartida);
+        game.physics.arcade.overlap(grupoJugadores, salida, acabarPartida);
     }
 }
 
@@ -392,10 +403,22 @@ function fireBullet() {
             bullet.reset(player1.x, player1.y);
             bullet.rotation = game.physics.arcade.angleToPointer(bullet);
             game.physics.arcade.moveToPointer(bullet, 400);
-            bulletTime = game.time.now + 200;
+            bulletTime = game.time.now + 600;
             cargador = cargador -1;
             bulletSound.play();
+            
+            putDisparo(game.input.worldX, game.input.worldY);
         }
+    }
+}
+
+function fireBulletJ2(balaX, balaY) {
+	bullet = bullets.getFirstExists(false);
+	if(bullet) {
+        bullet.reset(game.player2.x, game.player2.y);
+        bullet.rotation = game.physics.arcade.angleToXY(bullet, balaX, balaY);
+        game.physics.arcade.moveToXY(bullet, balaX, balaY, 400);
+        bulletSound.play();
     }
 }
 
@@ -449,7 +472,7 @@ function calcularVision() {
 }
 
 function testPlayers(x, y) {
-    if (testP2 == true) {
+    if (testP2 == true && game.jugador2.muerto == 0) {
         if (x >= game.player2.x - 31 && x < game.player2.x + 36 && y >= game.player2.y - 28 && y < game.player2.y + 29) {
         	game.player2.visible = true;
             testP2 = false;
@@ -521,10 +544,6 @@ function generarInventarios(tile) {
 
 //Rellena los inventarios anteriormente generados
 function llenarInventarios() {
-    listaObjetos.sort(function(a, b){return 0.5 - Math.random()});
-    listaObjetos.sort(function(a, b){return 0.5 - Math.random()});
-    listaObjetos.sort(function(a, b){return 0.5 - Math.random()});
-
     for (var i = 0; i < 64; i++) {
         inventarios[i].contenido = i;
     }
@@ -648,9 +667,11 @@ function mostrarInventario(modo, indice, pos) {
 
             inventarioAbierto = true;
         } else {
+        	if (spriteObjeto !== undefined) {
+                spriteObjeto.kill();
+                spriteObjeto.key = undefined;
+        	}
             spriteCuadro.kill();
-            spriteObjeto.kill();
-            spriteObjeto.key = undefined;
             inventarioAbierto = false;
         }
     }
@@ -676,6 +697,8 @@ function mostrarInventario(modo, indice, pos) {
             spriteObjeto.fixedToCamera = true;
             renderInventario();
         }
+        
+        putItem(indice);
     }
 }
 
@@ -755,12 +778,8 @@ function controladorGenerador() {
                 if(player1.items[i] === 'fusible') {
                     player1.items[i] = 'vacio';
                     --fusiblesRestantes;
+                    putFusibles();
                 }
-            }
-            if (fusiblesRestantes === 0) {
-                generadorEncendido = true;
-                game.add.sprite(544, 1324, 'luzGenerador');
-                game.add.sprite(1309, 911, 'luzSala');
             }
             renderInventario();
             esperarE = true;
@@ -806,8 +825,8 @@ function jugadorMuerto() {
         player1.vida = 100;
         actualizarVida();
         player1.revive();
-        player1.x = spawnsX[randomIndice[0]];
-        player1.y = spawnsY[randomIndice[0]];
+        player1.x = spawnX;
+        player1.y = spawnY;
         jugadorVivo = true;
     }
 
@@ -819,6 +838,20 @@ function acabarPartida () {
 }
 
 function getPlayer(callback) {
+    $.ajax({
+        method: "GET",
+        url: window.location.href + 'LastEscape/' + game.jugador2.id,
+        processData: false,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).done(function (data) {
+        game.jugador2 = JSON.parse(JSON.stringify(data));
+        callback(data);
+    })
+}
+
+function getPlayerFirstTime(callback) {
     $.ajax({
         method: "GET",
         url: window.location.href + 'LastEscape/' + game.jugador2.id,
@@ -838,9 +871,9 @@ function putPlayer() {
 	game.jugador1.y = player1.y;
 	game.jugador1.rotacion = player1.rotation;
 	if (player1.vida >= 0) {
-		game.jugador1.muerto = 1;
-	} else {
 		game.jugador1.muerto = 0;
+	} else {
+		game.jugador1.muerto = 1;
 	}
     $.ajax({
         method: "PUT",
@@ -855,5 +888,98 @@ function putPlayer() {
     })
 }
 
+function getItems(callback) {
+    $.ajax({
+        method: "GET",
+        url: window.location.href + 'LastEscape/objetos',
+        processData: false,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).done(function (data) {
+        callback(data);
+    })
+}
 
+function putItem(indice) {
+    $.ajax({
+        method: "PUT",
+        url: window.location.href + 'LastEscape/objetos/' + indice,
+        data: listaObjetos[indice],
+        processData: false,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).done(function (data) {
+    	
+    })
+}
 
+function getDisparo(callback) {
+    $.ajax({
+        method: "GET",
+        url: window.location.href + 'LastEscape/disparo/' + game.jugador2.id,
+        processData: false,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).done(function (data) {
+    	game.disparo = JSON.parse(JSON.stringify(data));
+        callback(data);
+    })
+}
+
+function putDisparo(x, y) {
+    game.subirdisparo = {x: x, y: y, disparo: 1};
+    
+    $.ajax({
+        method: "PUT",
+        url: window.location.href + 'LastEscape/disparo/' + game.jugador1.id,
+        data: JSON.stringify(game.subirdisparo),
+        processData: false,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).done(function (data) {
+    	
+    })
+}
+
+function getID(callback) {
+    $.ajax({
+        method: "GET",
+        url: window.location.href + 'LastEscape/id',
+        processData: false,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).done(function (data) {
+        callback(data);
+    })
+}
+
+function getFusibles(callback) {
+    $.ajax({
+        method: "GET",
+        url: window.location.href + 'LastEscape/fusible',
+        processData: false,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).done(function (data) {
+        callback(data);
+    })
+}
+
+function putFusibles() {
+    $.ajax({
+        method: "PUT",
+        url: window.location.href + 'LastEscape/fusible',
+        processData: false,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).done(function (data) {
+    	
+    })
+}
