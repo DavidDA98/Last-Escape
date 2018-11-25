@@ -5,6 +5,7 @@ public class Player {
 	private int x, y;
 	private float rotacion = 0;
 	private int muerto = 0;
+	private int salida = 0;
 	
 	Player() {
 		
@@ -48,5 +49,13 @@ public class Player {
 	
 	public void setMuerto(int m) {
 		this.muerto = m;
+	}
+	
+	public int getSalida() {
+		return salida;
+	}
+	
+	public void setSalida(int s) {
+		this.salida = s;
 	}
 }

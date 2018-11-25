@@ -158,7 +158,6 @@ LastEscape.levelState.prototype = {
             game.player2.visible = false;
             grupoJugadores = game.add.group();
             grupoJugadores.add(game.player2);
-            console.log("Termine");
         })
         
         
@@ -223,14 +222,14 @@ LastEscape.levelState.prototype = {
         game.physics.enable(salaDeControl, Phaser.Physics.ARCADE);
         salaDeControl.scale.setTo(5, 1);
 
-        bloqueoPuertas[0] = game.add.sprite(440, 20, 'colisionBox');
+        /*bloqueoPuertas[0] = game.add.sprite(440, 20, 'colisionBox');
         bloqueoPuertas[1] = game.add.sprite(1740, 1890, 'colisionBox');
         bloqueoPuertas[0].scale.setTo(2, 1);
         bloqueoPuertas[1].scale.setTo(2, 1);
         game.physics.enable(bloqueoPuertas[0], Phaser.Physics.ARCADE);
         game.physics.enable(bloqueoPuertas[1], Phaser.Physics.ARCADE);
         bloqueoPuertas[0].body.immovable = true;
-        bloqueoPuertas[1].body.immovable = true;
+        bloqueoPuertas[1].body.immovable = true;*/
 
         salida[0] = game.add.sprite(440, 0, 'colisionBox');
         salida[1] = game.add.sprite(1740, 1900, 'colisionBox');
@@ -271,6 +270,7 @@ LastEscape.levelState.prototype = {
         game.physics.arcade.collide(bullets, grupoJugadores, function(bullets){
             bullets.kill();
         });
+        game.physics.arcade.overlap(player1, salida, acabarPartida);
         game.physics.arcade.overlap(player1, inventarios, colisionInventario);
         game.physics.arcade.overlap(player1, generador, controladorGenerador);
         game.physics.arcade.overlap(player1, salaDeControl, controladorSala);
@@ -345,9 +345,10 @@ LastEscape.levelState.prototype = {
                 fireBulletJ2(game.disparo.x, game.disparo.y);
             }
         });
-
-        game.physics.arcade.overlap(player1, salida, acabarPartida);
-        game.physics.arcade.overlap(grupoJugadores, salida, acabarPartida);
+        
+        if (game.jugador2.salida == 1) {
+        	acabarPartida();
+        }
     }
 }
 
@@ -834,6 +835,8 @@ function jugadorMuerto() {
 
 //Funcion que se llama al salir por la puerta
 function acabarPartida () {
+	game.jugador1.salida = 1;
+	putPlayer();
     game.state.start('resultsState');
 }
 

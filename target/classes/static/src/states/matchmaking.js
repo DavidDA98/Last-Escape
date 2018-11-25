@@ -16,9 +16,11 @@ LastEscape.matchmakingState.prototype = {
 	},
 
     preload: function() {
-    	var text = "- MatchMaking -\n Esperando otro jugador \n para iniciar partida.";
-        var style = { font: "45px Arial", fill: "#0040FF", align: "center" };
-        var t = game.add.text(game.world.centerX - 200, 0, text, style);
+		game.add.tileSprite(0, 0, 1280, 720, 'fondoDesenfocado');
+		game.add.image(287, 360, 'esperando_jugador');
+		carga = game.add.sprite(604, 440, 'loading_circle');
+		carga.animations.add('loading_circle');
+		carga.animations.play('loading_circle', 10, true);
     },
 
     create: function() {
@@ -36,25 +38,23 @@ LastEscape.matchmakingState.prototype = {
 }
 
 function getNumPlayers(callback) {
-	var url = window.location.href + '/LastEscape';
 	$.ajax({
-		url: url,
+		url: window.location.href + '/LastEscape',
+		async: false,
 	}).done(function (data) {
 		callback(data);
 	})
 }
 
 function createPlayer() {
-	var url = window.location.href + '/LastEscape';
 	$.ajax({
 		method: "POST",
-		url: url,
+		url: window.location.href + '/LastEscape',
 		processData: false,
 		headers: {
 			"Content-Type": "application/json"
 		},
 	}).done(function (data) {
-		console.log("Player create: " + JSON.stringify(data));
 		game.jugador1 = data;
 	})
 }

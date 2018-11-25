@@ -61,9 +61,9 @@ public class GameController {
 		} else {
 			player.setX(spawnsX[1]);
 			player.setY(spawnsY[1]);
-			//mezclarArray(listaObjetos);
-			//mezclarArray(listaObjetos);
-			//mezclarArray(listaObjetos);
+			mezclarArray(listaObjetos);
+			mezclarArray(listaObjetos);
+			mezclarArray(listaObjetos);
 		}
 		players.put(player.getId(), player);
 		return player;
@@ -158,6 +158,15 @@ public class GameController {
 	@GetMapping(value = "/LastEscape/fusible")
 	public int getFusibles() {
 		return fusiblesRestantes;
+	}
+	
+	@PostMapping(value = "/finpartida")
+	@ResponseStatus(HttpStatus.CREATED)
+	public boolean delPlayers() {
+		long l = 1;
+		players.clear();
+		nextId.set(0);
+		return true;
 	}
 	
 	static void mezclarArray(String[] ar) {

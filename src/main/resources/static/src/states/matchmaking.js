@@ -38,25 +38,23 @@ LastEscape.matchmakingState.prototype = {
 }
 
 function getNumPlayers(callback) {
-	var url = window.location.href + '/LastEscape';
 	$.ajax({
-		url: url,
+		url: window.location.href + '/LastEscape',
+		async: false,
 	}).done(function (data) {
 		callback(data);
 	})
 }
 
 function createPlayer() {
-	var url = window.location.href + '/LastEscape';
 	$.ajax({
 		method: "POST",
-		url: url,
+		url: window.location.href + '/LastEscape',
 		processData: false,
 		headers: {
 			"Content-Type": "application/json"
 		},
 	}).done(function (data) {
-		console.log("Player create: " + JSON.stringify(data));
 		game.jugador1 = data;
 	})
 }
