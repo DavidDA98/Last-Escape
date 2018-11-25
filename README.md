@@ -11,7 +11,9 @@
 #### 8. Armas.
 #### 9. Objetos.
 #### 10. Matchmaking.
-#### 11. Navegación de Pantallas
+#### 11. Navegación de Pantallas.
+#### 12. Diagrama de Clases.
+#### 13. Cómo instalar.
 
 ## 1. Autores:
 
@@ -102,3 +104,12 @@ Además también se tendrá en cuenta el tiempo que han tardado en escapar. De e
 ![NavegacionPantallas](/Imagenes/navegación_pantallas.png)
 ![ExplicacionPantallas1](/Imagenes/explicación_pantallas_1.png)
 ![ExplicacionPantallas2](/Imagenes/explicación_pantallas_2.png)
+
+## 12. Diagrama de Clases:
+
+![DiagramaClases](/Imagenes/diagrama_clases.png)
+
+## 13. Cómo instalar:
+
+Para poder ejecutar el servidor se debe importar como proyecto en Spring Tool Suite 4.0. Después ejecutar como aplicación spring boot.
+Se debe tener instalado JRE 1.8.
