@@ -161,9 +161,8 @@ public class GameController {
 	}
 	
 	@PostMapping(value = "/finpartida")
-	@ResponseStatus(HttpStatus.CREATED)
+	@ResponseStatus(HttpStatus.OK)
 	public boolean delPlayers() {
-		long l = 1;
 		players.clear();
 		nextId.set(0);
 		return true;

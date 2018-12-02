@@ -222,14 +222,14 @@ LastEscape.levelState.prototype = {
         game.physics.enable(salaDeControl, Phaser.Physics.ARCADE);
         salaDeControl.scale.setTo(5, 1);
 
-        /*bloqueoPuertas[0] = game.add.sprite(440, 20, 'colisionBox');
+        bloqueoPuertas[0] = game.add.sprite(440, 20, 'colisionBox');
         bloqueoPuertas[1] = game.add.sprite(1740, 1890, 'colisionBox');
         bloqueoPuertas[0].scale.setTo(2, 1);
         bloqueoPuertas[1].scale.setTo(2, 1);
         game.physics.enable(bloqueoPuertas[0], Phaser.Physics.ARCADE);
         game.physics.enable(bloqueoPuertas[1], Phaser.Physics.ARCADE);
         bloqueoPuertas[0].body.immovable = true;
-        bloqueoPuertas[1].body.immovable = true;*/
+        bloqueoPuertas[1].body.immovable = true;
 
         salida[0] = game.add.sprite(440, 0, 'colisionBox');
         salida[1] = game.add.sprite(1740, 1900, 'colisionBox');

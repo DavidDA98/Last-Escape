@@ -13,6 +13,7 @@ LastEscape.bootState.prototype = {
 
     create: function() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.connection = new WebSocket('ws://' + window.location.hostname + ':8085/game');
         game.state.start('preloadState');
     },
 
