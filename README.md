@@ -113,3 +113,5 @@ Además también se tendrá en cuenta el tiempo que han tardado en escapar. De e
 
 Para poder ejecutar el servidor se debe importar como proyecto en Spring Tool Suite 4.0. Después ejecutar como aplicación spring boot.
 Se debe tener instalado JRE 1.8.
+
+Por último, se debe modificar el archivo application.properties cambiando la IP a tu IP local y el puerto a uno de tu elección.
