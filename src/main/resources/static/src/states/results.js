@@ -15,6 +15,9 @@ LastEscape.resultsState.prototype = {
         if (game.jugador2.salida == 1) {
         	borrarJugadores();
         }
+        
+        game.jugador1 = undefined;
+        game.jugador2 = undefined;
     },
 
     update: function() {
@@ -27,14 +30,6 @@ function botonCerrar () {
 }
 
 function borrarJugadores() {
-	$.ajax({
-		method: "POST",
-		url: window.location.href + '/finpartida',
-		processData: false,
-		headers: {
-			"Content-Type": "application/json"
-		},
-	}).done(function (data) {
-		
-	})
+	var msg = {metodo: "deletePlayers"};
+	game.connection.send(JSON.stringify(msg));
 }

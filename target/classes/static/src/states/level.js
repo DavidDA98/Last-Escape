@@ -72,9 +72,22 @@ LastEscape.levelState.prototype = {
 			game.jugador2 = {id: 1}
 		}
 		
-		getItems(function (array){
-			listaObjetos = array;
-		});
+		game.connection.onmessage = function(msg) {
+			data = JSON.parse(msg.data);
+			if (data.metodo == "getGameState") {
+				game.jugador2 = data.jugador;
+				listaObjetos = data.items;
+				fusiblesRestantes = data.fusiblesRestantes;
+				if (data.disparo.hayDisparo == 1) {
+					fireBulletJ2(data.disparo.x, data.disparo.y);
+				}
+			} else if (data.metodo == "getId") {
+				idCorrecta = data.id;
+			}
+		}
+		
+		getGameState();
+		getID();
 	},
 
     preload: function() {
@@ -133,7 +146,7 @@ LastEscape.levelState.prototype = {
         //Jugador
         spawnX = game.jugador1.x;
         spawnY = game.jugador1.y;
-        player1 = game.add.sprite(game.jugador1.x, game.jugador1.y, 'pj1pistola', 0);
+        player1 = game.add.sprite(game.jugador1.x, game.jugador1.y, game.skin, 0);
         player1.scale.setTo(0.4, 0.4);
         player1.anchor.setTo(0.47,0.5);
         walk = player1.animations.add('walk');
@@ -149,18 +162,13 @@ LastEscape.levelState.prototype = {
         player1.items[2] = 'vacio';
         player1.items[3] = 'vacio';
         
-        getPlayerFirstTime(function (player2Data) {
-        	game.jugador2 = JSON.parse(JSON.stringify(player2Data));
-        	game.player2 = game.add.sprite(game.jugador2.x, game.jugador2.y, 'pj2pistola', 0);
-        	game.player2.scale.setTo(0.4, 0.4);
-        	game.player2.anchor.setTo(0.47,0.5);
-            game.physics.enable(game.player2, Phaser.Physics.ARCADE);
-            game.player2.visible = false;
-            grupoJugadores = game.add.group();
-            grupoJugadores.add(game.player2);
-        })
-        
-        
+    	game.player2 = game.add.sprite(game.jugador2.x, game.jugador2.y, 'pj2', 0);
+    	game.player2.scale.setTo(0.4, 0.4);
+    	game.player2.anchor.setTo(0.47,0.5);
+        game.physics.enable(game.player2, Phaser.Physics.ARCADE);
+        game.player2.visible = false;
+        grupoJugadores = game.add.group();
+        grupoJugadores.add(game.player2);
 
         /*player3 = game.add.sprite(spawnsX[randomIndice[2]], spawnsY[randomIndice[2]], 'pj3pistola', 0);
         player3.scale.setTo(0.4, 0.4);
@@ -213,23 +221,23 @@ LastEscape.levelState.prototype = {
         llenarInventarios();
 
         //Gameflow
-        getID(function (data) {
+        /*getID(function (data) {
             idCorrecta = data;
-        });
+        });*/
         generador = game.add.sprite(560, 1330, 'colisionBox');
         game.physics.enable(generador, Phaser.Physics.ARCADE);
         salaDeControl = game.add.sprite(1430, 1000, 'colisionBox');
         game.physics.enable(salaDeControl, Phaser.Physics.ARCADE);
         salaDeControl.scale.setTo(5, 1);
 
-        bloqueoPuertas[0] = game.add.sprite(440, 20, 'colisionBox');
+        /*bloqueoPuertas[0] = game.add.sprite(440, 20, 'colisionBox');
         bloqueoPuertas[1] = game.add.sprite(1740, 1890, 'colisionBox');
         bloqueoPuertas[0].scale.setTo(2, 1);
         bloqueoPuertas[1].scale.setTo(2, 1);
         game.physics.enable(bloqueoPuertas[0], Phaser.Physics.ARCADE);
         game.physics.enable(bloqueoPuertas[1], Phaser.Physics.ARCADE);
         bloqueoPuertas[0].body.immovable = true;
-        bloqueoPuertas[1].body.immovable = true;
+        bloqueoPuertas[1].body.immovable = true;*/
 
         salida[0] = game.add.sprite(440, 0, 'colisionBox');
         salida[1] = game.add.sprite(1740, 1900, 'colisionBox');
@@ -317,34 +325,20 @@ LastEscape.levelState.prototype = {
         }
 
         if (!generadorEncendido) {
-            getFusibles(function(data) {
-                fusiblesRestantes = data;
-                if (fusiblesRestantes === 0) {
-                    generadorEncendido = true;
-                    game.add.sprite(544, 1324, 'luzGenerador');
-                    game.add.sprite(1309, 911, 'luzSala');
-                }
-            });
+        	if (fusiblesRestantes === 0) {
+                generadorEncendido = true;
+                game.add.sprite(544, 1324, 'luzGenerador');
+                game.add.sprite(1309, 911, 'luzSala');
+            }
         }
         
-        //Subimos nuestro jugador y actualizamos jugador enemigo e inventarios
+        //Subimos nuestro jugador y actualizamos el estado del juego
         putPlayer();
-        getPlayer( function (updatePlayer2) {
-        	game.jugador2 = JSON.parse(JSON.stringify(updatePlayer2));
-        	game.player2.x = game.jugador2.x;
-        	game.player2.y = game.jugador2.y;
-        	game.player2.rotation = game.jugador2.rotacion;
-        });
-        getItems(function (array){
-			listaObjetos = array;
-        });
+        getGameState();
         
-        getDisparo(function (datos){
-            game.disparo = JSON.parse(JSON.stringify(datos));
-            if (game.disparo.disparo == 1){
-                fireBulletJ2(game.disparo.x, game.disparo.y);
-            }
-        });
+        game.player2.x = game.jugador2.x;
+    	game.player2.y = game.jugador2.y;
+    	game.player2.rotation = game.jugador2.rotacion;
         
         if (game.jugador2.salida == 1) {
         	acabarPartida();
@@ -840,33 +834,10 @@ function acabarPartida () {
     game.state.start('resultsState');
 }
 
-function getPlayer(callback) {
-    $.ajax({
-        method: "GET",
-        url: window.location.href + 'LastEscape/' + game.jugador2.id,
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (data) {
-        game.jugador2 = JSON.parse(JSON.stringify(data));
-        callback(data);
-    })
-}
-
-function getPlayerFirstTime(callback) {
-    $.ajax({
-        method: "GET",
-        url: window.location.href + 'LastEscape/' + game.jugador2.id,
-        async: false,
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (data) {
-        game.jugador2 = JSON.parse(JSON.stringify(data));
-        callback(data);
-    })
+//Funciones para interacctuar con el servidor
+function getGameState() {
+	var msg = {metodo: "getGameState", id: game.jugador1.id};
+	game.connection.send(JSON.stringify(msg));
 }
 
 function putPlayer() {
@@ -878,111 +849,28 @@ function putPlayer() {
 	} else {
 		game.jugador1.muerto = 1;
 	}
-    $.ajax({
-        method: "PUT",
-        url: window.location.href + 'LastEscape/' + game.jugador1.id,
-        data: JSON.stringify(game.jugador1),
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (data) {
-    	
-    })
+	
+	var msg = {metodo: "putPlayer", jugador: game.jugador1};
+	game.connection.send(JSON.stringify(msg));
 }
 
-function getItems(callback) {
-    $.ajax({
-        method: "GET",
-        url: window.location.href + 'LastEscape/objetos',
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (data) {
-        callback(data);
-    })
-}
-
-function putItem(indice) {
-    $.ajax({
-        method: "PUT",
-        url: window.location.href + 'LastEscape/objetos/' + indice,
-        data: listaObjetos[indice],
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (data) {
-    	
-    })
-}
-
-function getDisparo(callback) {
-    $.ajax({
-        method: "GET",
-        url: window.location.href + 'LastEscape/disparo/' + game.jugador2.id,
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (data) {
-    	game.disparo = JSON.parse(JSON.stringify(data));
-        callback(data);
-    })
+function putItem(index) {
+	var msg = {metodo: "putItem", indice: index, item: listaObjetos[index]};
+	game.connection.send(JSON.stringify(msg));
 }
 
 function putDisparo(x, y) {
-    game.subirdisparo = {x: x, y: y, disparo: 1};
-    
-    $.ajax({
-        method: "PUT",
-        url: window.location.href + 'LastEscape/disparo/' + game.jugador1.id,
-        data: JSON.stringify(game.subirdisparo),
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (data) {
-    	
-    })
+    game.disparo = {x: x, y: y, disparo: 1};
+    var msg = {metodo: "putDisparo", id: game.jugador1.id, disparo: game.disparo};
+    game.connection.send(JSON.stringify(msg));
 }
 
 function getID(callback) {
-    $.ajax({
-        method: "GET",
-        url: window.location.href + 'LastEscape/id',
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (data) {
-        callback(data);
-    })
-}
-
-function getFusibles(callback) {
-    $.ajax({
-        method: "GET",
-        url: window.location.href + 'LastEscape/fusible',
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (data) {
-        callback(data);
-    })
+	var msg = {metodo: "getId"};
+	game.connection.send(JSON.stringify(msg));
 }
 
 function putFusibles() {
-    $.ajax({
-        method: "PUT",
-        url: window.location.href + 'LastEscape/fusible',
-        processData: false,
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).done(function (data) {
-    	
-    })
+	var msg = {metodo: "putFusibles", fusiblesRestantes: fusiblesRestantes};
+	game.connection.send(JSON.stringify(msg));
 }

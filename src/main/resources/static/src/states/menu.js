@@ -23,7 +23,7 @@ LastEscape.menuState.prototype = {
 }
 
 function botonNuevaPartida () {
-    game.state.start('selectMapState');
+	game.state.start('selectMapState');
 }
 
 function botonAyuda () {

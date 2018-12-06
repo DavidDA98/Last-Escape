@@ -5,35 +5,22 @@ LastEscape.matchmakingState = function(game) {
 LastEscape.matchmakingState.prototype = {
 		
 	init: function() {
-		game.connection.onerror = function(e) {
-			console.log("WS error: " + e);
-		}
 		game.connection.onmessage = function(msg) {
-			console.log(msg.data);
 			data = JSON.parse(msg.data);
-			console.log(data.metodo);
 			if (data.metodo == "getNumPlayers") {
-				if (data.longitud > 1 && game.jugador1 === null) {
-					console.log ('==========================================================');
-					console.log ('= El servidor está lleno. Vuelve a intentarlo más tarde. =');
-					console.log ('==========================================================');
-					game.state.start('selectCharacterState');
-				}
-				
-				if (data.longitud == 2 && game.jugador1 !== null) {
+				if (data.longitud == 2 && game.jugador1 !== undefined) {
 					console.log ('##### COMIENZA EL JUEGO #####');
+					playerCreated = false;
 					game.state.start('preloadLevelState');
 				}
 			}
 			
 			if (data.metodo == "createPlayer") {
 				game.jugador1 = data.jugador;
-				console.log(game.jugador1);
+				game.jugador1.muerto = 0;
+				game.jugador1.salida = 0;
 			}
 		}
-		
-		var msg = {metodo: "getNumPlayers"};
-		game.connection.send(JSON.stringify(msg));
 	},
 
     preload: function() {
