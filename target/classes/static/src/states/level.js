@@ -146,6 +146,7 @@ LastEscape.levelState.prototype = {
         //Jugador
         spawnX = game.jugador1.x;
         spawnY = game.jugador1.y;
+        console.log(game.skin);
         player1 = game.add.sprite(game.jugador1.x, game.jugador1.y, game.skin, 0);
         player1.scale.setTo(0.4, 0.4);
         player1.anchor.setTo(0.47,0.5);
@@ -167,8 +168,6 @@ LastEscape.levelState.prototype = {
     	game.player2.anchor.setTo(0.47,0.5);
         game.physics.enable(game.player2, Phaser.Physics.ARCADE);
         game.player2.visible = false;
-        grupoJugadores = game.add.group();
-        grupoJugadores.add(game.player2);
 
         /*player3 = game.add.sprite(spawnsX[randomIndice[2]], spawnsY[randomIndice[2]], 'pj3pistola', 0);
         player3.scale.setTo(0.4, 0.4);
@@ -182,7 +181,8 @@ LastEscape.levelState.prototype = {
         game.physics.enable(player4, Phaser.Physics.ARCADE);
         player4.visible = false;*/
         
-        
+        grupoJugadores = game.add.group();
+        grupoJugadores.add(game.player2);
         //grupoJugadores.add(player3);
         //grupoJugadores.add(player4);
 
@@ -221,9 +221,6 @@ LastEscape.levelState.prototype = {
         llenarInventarios();
 
         //Gameflow
-        /*getID(function (data) {
-            idCorrecta = data;
-        });*/
         generador = game.add.sprite(560, 1330, 'colisionBox');
         game.physics.enable(generador, Phaser.Physics.ARCADE);
         salaDeControl = game.add.sprite(1430, 1000, 'colisionBox');
