@@ -18,6 +18,8 @@ LastEscape.resultsState.prototype = {
         
         game.jugador1 = undefined;
         game.jugador2 = undefined;
+        game.jugador3 = undefined;
+        game.jugador4 = undefined;
     },
 
     update: function() {

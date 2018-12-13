@@ -26,7 +26,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 	Map<Long, Player> players = new ConcurrentHashMap<>();
 	AtomicLong nextId = new AtomicLong(0);
 	
-	Shot[] disparos = {new Shot(), new Shot()};
+	Shot[] disparos = {new Shot(), new Shot(), new Shot(), new Shot()};
 	
 	int[] spawnsX = {480, 2750, 2560, 260};
 	int[] spawnsY = {370, 170, 1750, 1770};
@@ -41,12 +41,11 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 		    "balas", "balas", "balas"
 	};
 	
-	String[] listaIDs = {
-			"identificacion1", "identificacion2", "identificacion3", "identificacion4", "identificacion5", "identificacion6"
-	};
-	
-	String idCorrecta = listaIDs[ThreadLocalRandom.current().nextInt(1, 7)];
+	String idCorrecta = "identificacion" + ThreadLocalRandom.current().nextInt(1, 7);
 	int fusiblesRestantes = 4;
+	
+	int gameInProgress = 0;
+	int jugadoresOnline = 0;
 	
 	ObjectMapper mapper = new ObjectMapper();
 	
@@ -66,17 +65,17 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			String metodo = rNode.get("metodo").asText();
 			
 			ObjectNode wNode = mapper.createObjectNode();
-			ObjectNode wNodeAux = mapper.createObjectNode();
 			String msg;
 			
 			switch (metodo) {
 			
 				//Devuelve el numero de jugadores
-				case "getNumPlayers":
+				case "getMatchmakingState":
 					wNode = mapper.createObjectNode();
 					
-					wNode.put("metodo", "getNumPlayers");
-					wNode.put("longitud", getPlayers());
+					wNode.put("metodo", "getMatchmakingState");
+					wNode.put("jugadores", players.size());
+					wNode.put("gameState", gameInProgress);
 					
 					msg = wNode.toString();
 					session.sendMessage(new TextMessage(msg));
@@ -85,15 +84,9 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				//Crea un nuevo jugador
 				case "createPlayer":
 					wNode = mapper.createObjectNode();
-					wNodeAux = mapper.createObjectNode();
-					
-					Player p = createPlayer();
 					
 					wNode.put("metodo", "createPlayer");
-					wNodeAux.put("id", p.getId());
-					wNodeAux.put("x", p.getX());
-					wNodeAux.put("y", p.getY());
-					wNode.set("jugador", wNodeAux);
+					wNode.putPOJO("jugador", createPlayer(rNode.get("skin").asText()));
 					
 					msg = wNode.toString();
 					session.sendMessage(new TextMessage(msg));
@@ -101,55 +94,56 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					
 				//Actualiza la posicion del jugador	
 				case "putPlayer":
-					rNode = rNode.get("jugador");
+					rNode.get("jugador");
 					
-					Player up = new Player();
+					players.get(rNode.path("jugador").get("id").asLong()).setX(
+						rNode.path("jugador").get("x").asInt()
+					);
+					players.get(rNode.path("jugador").get("id").asLong()).setY(
+						rNode.path("jugador").get("y").asInt()
+					);
+					players.get(rNode.path("jugador").get("id").asLong()).setRotacion(
+						rNode.path("jugador").get("rotacion").floatValue()
+					);
+					players.get(rNode.path("jugador").get("id").asLong()).setMuerto(
+						rNode.path("jugador").get("muerto").asInt()
+					);
+					players.get(rNode.path("jugador").get("id").asLong()).setSalida(
+						rNode.path("jugador").get("salida").asInt()
+					);
+					players.get(rNode.path("jugador").get("id").asLong()).setSkin(
+						rNode.path("jugador").get("skin").asText()
+					);
 					
-					up.setId(rNode.get("id").asLong());
-					up.setX(rNode.get("x").asInt());
-					up.setY(rNode.get("y").asInt());
-					up.setRotacion(rNode.get("rotacion").floatValue());
-					up.setMuerto(rNode.get("muerto").asInt());
-					up.setSalida(rNode.get("salida").asInt());
-					
-					updatePlayer(up);
 					break;
 					
 				//Devuelve el estado del juego	
 				case "getGameState":
-					long id;
-					
-					//Recibe los datos del jugador contrario
-					if (rNode.get("id").asLong() == 1) {
-						id = 2;
-					} else {
-						id = 1;
-					}
-					
-					Player gp = players.get(id);
-					
 					wNode = mapper.createObjectNode();
-					wNodeAux = mapper.createObjectNode();
 					ArrayNode array = mapper.createArrayNode();
+					
+					long id = 1;
 					
 					wNode.put("metodo", "getGameState");
 					
-					wNodeAux.put("id", gp.getId());
-					wNodeAux.put("x", gp.getX());
-					wNodeAux.put("y", gp.getY());
-					wNodeAux.put("rotacion", gp.getRotacion());
-					wNodeAux.put("muerto", gp.getMuerto());
-					wNodeAux.put("salida", gp.getSalida());
+					wNode.putPOJO("jugador1", players.get(id));					
+					wNode.putPOJO("disparo1", disparos[0]);
 					
-					wNode.set("jugador", wNodeAux);
+					id++;
+					wNode.putPOJO("jugador2", players.get(id));					
+					wNode.putPOJO("disparo2", disparos[1]);
 					
-					wNodeAux = mapper.createObjectNode();
-					wNodeAux.put("x", disparos[(int) id - 1].getX());
-					wNodeAux.put("y", disparos[(int) id - 1].getY());
-					wNodeAux.put("hayDisparo", disparos[(int) id - 1].getDisparo());
-					disparos[(int) id - 1].setDisparo(0);
+					if (jugadoresOnline > 2) {
+						id++;
+						wNode.putPOJO("jugador3", players.get(id));					
+						wNode.putPOJO("disparo3", disparos[2]);
+					}
 					
-					wNode.set("disparo", wNodeAux);
+					if (jugadoresOnline > 3) {
+						id++;
+						wNode.putPOJO("jugador4", players.get(id));					
+						wNode.putPOJO("disparo4", disparos[3]);
+					}
 					
 					array = mapper.valueToTree(listaObjetos);
 					wNode.set("items", array);
@@ -158,6 +152,12 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					
 					msg = wNode.toString();
 					session.sendMessage(new TextMessage(msg));
+					
+					disparos[0].setDisparo(0);
+					disparos[1].setDisparo(0);
+					disparos[2].setDisparo(0);
+					disparos[3].setDisparo(0);
+					
 					break;
 				
 				//Coloca el nuevo item en la lista de objetos
@@ -167,14 +167,11 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					
 				//Actualiza si un jugador ha disparado
 				case "putDisparo":
-					int idShot = rNode.get("id").asInt();
-					idShot -= 1;
+					int idShot = rNode.get("id").asInt() - 1;
 					
-					rNode = rNode.get("disparo");
-					
-					disparos[idShot].setX(rNode.get("x").asInt());
-					disparos[idShot].setY(rNode.get("y").asInt());
-					disparos[idShot].setDisparo(rNode.get("disparo").asInt());
+					disparos[idShot].setX(rNode.path("disparo").get("x").asInt());
+					disparos[idShot].setY(rNode.path("disparo").get("y").asInt());
+					disparos[idShot].setDisparo(rNode.path("disparo").get("disparo").asInt());
 					break;
 				
 				//Actualiza los fusibles restantes
@@ -190,20 +187,22 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					msg = wNode.toString();
 					session.sendMessage(new TextMessage(msg));
 					break;
+					
+				case "comenzarJuego":
+					gameInProgress = 1;
+					jugadoresOnline = players.size();
+					break;
 				
 				case "deletePlayers":
 					players.clear();
 					nextId.set(0);
+					gameInProgress = 0;
 					break;
 			}
 		}
 	}
 	
-	public int getPlayers() {
-		return players.size();
-	}
-	
-	public Player createPlayer() {
+	public Player createPlayer(String skin) {
 		Player player = new Player();
 		long id = nextId.incrementAndGet();
 		player.setId(id);
@@ -213,19 +212,19 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 			mezclarArray(listaObjetos);
 			mezclarArray(listaObjetos);
 			mezclarArray(listaObjetos);
-		} else {
+		} else if (id == 2 ){
 			player.setX(spawnsX[1]);
 			player.setY(spawnsY[1]);
+		} else if (id == 3 ){
+			player.setX(spawnsX[2]);
+			player.setY(spawnsY[2]);
+		} else {
+			player.setX(spawnsX[3]);
+			player.setY(spawnsY[3]);
 		}
+		player.setSkin(skin);
 		players.put(player.getId(), player);
 		return player;
-	}
-	
-	public void updatePlayer(Player player) {
-		Player savedPlayer = players.get(player.getId());
-		if (savedPlayer != null) {
-			players.put(player.getId(), player);
-		}
 	}
 	
 	static void mezclarArray(String[] ar) {

@@ -3,25 +3,6 @@ LastEscape.matchmakingState = function(game) {
 }
 
 LastEscape.matchmakingState.prototype = {
-		
-	init: function() {
-		game.connection.onmessage = function(msg) {
-			data = JSON.parse(msg.data);
-			if (data.metodo == "getNumPlayers") {
-				if (data.longitud == 2 && game.jugador1 !== undefined) {
-					console.log ('##### COMIENZA EL JUEGO #####');
-					playerCreated = false;
-					game.state.start('preloadLevelState');
-				}
-			}
-			
-			if (data.metodo == "createPlayer") {
-				game.jugador1 = data.jugador;
-				game.jugador1.muerto = 0;
-				game.jugador1.salida = 0;
-			}
-		}
-	},
 
     preload: function() {
 		game.add.tileSprite(0, 0, 1280, 720, 'fondoDesenfocado');
@@ -32,12 +13,23 @@ LastEscape.matchmakingState.prototype = {
     },
 
     create: function() {
-    	var msg = {metodo: "createPlayer"};
+    	var msg = {metodo: "createPlayer", skin: game.skin};
     	game.connection.send(JSON.stringify(msg));
     },
 
     update: function() {
-    	var msg = {metodo: "getNumPlayers"};
+    	var msg = {metodo: "getMatchmakingState"};
 		game.connection.send(JSON.stringify(msg));
+		
+		if (game.gameState == 1) {
+			game.state.start('preloadLevelState');
+		}
+		
+		if (game.jugadoresOnline == game.jugadoresNecesarios) {
+			var msg = {metodo: "getGameState"};
+			game.connection.send(JSON.stringify(msg));
+			var msg = {metodo: "comenzarJuego"};
+	    	game.connection.send(JSON.stringify(msg));
+		}
     },
 }

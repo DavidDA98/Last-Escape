@@ -66,27 +66,6 @@ var respawnTime;
 LastEscape.levelState.prototype = {
 		
 	init: function() {
-		if (game.jugador1.id == 1) {
-			game.jugador2 = {id: 2}
-		} else {
-			game.jugador2 = {id: 1}
-		}
-		
-		game.connection.onmessage = function(msg) {
-			data = JSON.parse(msg.data);
-			if (data.metodo == "getGameState") {
-				game.jugador2 = data.jugador;
-				listaObjetos = data.items;
-				fusiblesRestantes = data.fusiblesRestantes;
-				if (data.disparo.hayDisparo == 1) {
-					fireBulletJ2(data.disparo.x, data.disparo.y);
-				}
-			} else if (data.metodo == "getId") {
-				idCorrecta = data.id;
-			}
-		}
-		
-		getGameState();
 		getID();
 	},
 
@@ -143,11 +122,11 @@ LastEscape.levelState.prototype = {
         bulletSound = game.add.audio('sonido_pistola',0.05);
         reloadSound = game.add.audio('sonido_recargar_pistola',0.05);
 
-        //Jugador
+        //Jugadores
+        grupoJugadores = game.add.group();
         spawnX = game.jugador1.x;
         spawnY = game.jugador1.y;
-        console.log(game.skin);
-        player1 = game.add.sprite(game.jugador1.x, game.jugador1.y, game.skin, 0);
+        player1 = game.add.sprite(game.jugador1.x, game.jugador1.y, game.jugador1.skin, 0);
         player1.scale.setTo(0.4, 0.4);
         player1.anchor.setTo(0.47,0.5);
         walk = player1.animations.add('walk');
@@ -163,28 +142,30 @@ LastEscape.levelState.prototype = {
         player1.items[2] = 'vacio';
         player1.items[3] = 'vacio';
         
-    	game.player2 = game.add.sprite(game.jugador2.x, game.jugador2.y, 'pj2', 0);
+    	game.player2 = game.add.sprite(game.jugador2.x, game.jugador2.y, game.jugador2.skin, 0);
     	game.player2.scale.setTo(0.4, 0.4);
     	game.player2.anchor.setTo(0.47,0.5);
         game.physics.enable(game.player2, Phaser.Physics.ARCADE);
         game.player2.visible = false;
-
-        /*player3 = game.add.sprite(spawnsX[randomIndice[2]], spawnsY[randomIndice[2]], 'pj3pistola', 0);
-        player3.scale.setTo(0.4, 0.4);
-        player3.anchor.setTo(0.47,0.5);
-        game.physics.enable(player3, Phaser.Physics.ARCADE);
-        player3.visible = false;
-
-        player4 = game.add.sprite(spawnsX[randomIndice[3]], spawnsY[randomIndice[3]], 'pj4pistola', 0);
-        player4.scale.setTo(0.4, 0.4);
-        player4.anchor.setTo(0.47,0.5);
-        game.physics.enable(player4, Phaser.Physics.ARCADE);
-        player4.visible = false;*/
-        
-        grupoJugadores = game.add.group();
         grupoJugadores.add(game.player2);
-        //grupoJugadores.add(player3);
-        //grupoJugadores.add(player4);
+        
+        if (game.jugadoresOnline > 2) {
+        	game.player3 = game.add.sprite(game.jugador3.x, game.jugador3.y, game.jugador3.skin, 0);
+        	game.player3.scale.setTo(0.4, 0.4);
+        	game.player3.anchor.setTo(0.47,0.5);
+            game.physics.enable(game.player3, Phaser.Physics.ARCADE);
+            game.player3.visible = false;
+            grupoJugadores.add(game.player3);
+        }
+
+        if (game.jugadoresOnline > 3) {
+        	game.player4 = game.add.sprite(game.jugador4.x, game.jugador4.y, game.jugador4.skin, 0);
+        	game.player4.scale.setTo(0.4, 0.4);
+        	game.player4.anchor.setTo(0.47,0.5);
+            game.physics.enable(game.player4, Phaser.Physics.ARCADE);
+            game.player4.visible = false;
+            grupoJugadores.add(game.player4);
+        }
 
         game.camera.follow(player1, 0.5, 0.5);
 
@@ -245,7 +226,9 @@ LastEscape.levelState.prototype = {
     },
 
     update: function() {
-        playerMovement();
+    	if (jugadorVivo) {
+    		playerMovement();
+    	}
 
         //Golpe melee
         if (spaceKey.isDown) {
@@ -290,8 +273,13 @@ LastEscape.levelState.prototype = {
         if (game.player2) {
         	game.player2.visible = false;
         }
-        //player3.visible = false;
-        //player4.visible = false;
+        
+        if (game.jugadoresOnline > 2) {
+        	game.player3.visible = false;
+        }
+        if (game.jugadoresOnline > 3) {
+        	game.player4.visible = false;
+        }
 
         //Arma
         if (cargador > 0 && fireButton.isDown && jugadorVivo) {
@@ -404,7 +392,7 @@ function fireBullet() {
     }
 }
 
-function fireBulletJ2(balaX, balaY) {
+function fireBulletOtherPlayer(balaX, balaY) {
 	bullet = bullets.getFirstExists(false);
 	if(bullet) {
         bullet.reset(game.player2.x, game.player2.y);
@@ -471,19 +459,19 @@ function testPlayers(x, y) {
         }
     }
 
-    /*if (testP3 == true) {
-        if (x >= player3.x - 31 && x < player3.x + 36 && y >= player3.y - 28 && y < player3.y + 29) {
-            player3.visible = true;
+    if (testP3 == true && game.jugadoresOnline > 2) {
+        if (x >= game.player3.x - 31 && x < game.player3.x + 36 && y >= game.player3.y - 28 && y < game.player3.y + 29) {
+        	game.player3.visible = true;
             testP3 = false;
         }
     }
 
-    if (testP4 == true) {
-        if (x >= player4.x - 31 && x < player4.x + 36 && y >= player4.y - 28 && y < player4.y + 29) {
-            player4.visible = true;
+    if (testP4 == true && game.jugadoresOnline > 3) {
+        if (x >= game.player4.x - 31 && x < game.player4.x + 36 && y >= game.player4.y - 28 && y < game.player4.y + 29) {
+        	game.player4.visible = true;
             testP4 = false;
         }
-    }*/
+    }
 }
 
 //Lee los datos del inventario del jugador y los muestra por pantalla
@@ -833,7 +821,7 @@ function acabarPartida () {
 
 //Funciones para interacctuar con el servidor
 function getGameState() {
-	var msg = {metodo: "getGameState", id: game.jugador1.id};
+	var msg = {metodo: "getGameState"};
 	game.connection.send(JSON.stringify(msg));
 }
 
@@ -862,7 +850,7 @@ function putDisparo(x, y) {
     game.connection.send(JSON.stringify(msg));
 }
 
-function getID(callback) {
+function getID() {
 	var msg = {metodo: "getId"};
 	game.connection.send(JSON.stringify(msg));
 }

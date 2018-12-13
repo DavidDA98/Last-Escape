@@ -32,4 +32,9 @@ public class Shot {
 	public void setDisparo(int disparo) {
 		this.disparo = disparo;
 	}
+	
+	@Override
+	public String toString() {
+		return "{\"x\":" + this.x + ",\"y\":" + this.y + ",\"hayDisparo\":" + this.disparo + "}";
+	}
 }

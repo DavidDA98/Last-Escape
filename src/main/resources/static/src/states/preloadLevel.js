@@ -3,10 +3,12 @@
 }
 
 LastEscape.preloadLevelState.prototype = {
-
+		
     preload: function() {
-        game.load.spritesheet('pj1', '/assets/animations/PJ1_andar.png', 139, 141);
-        game.load.spritesheet('pj2', '/assets/animations/PJ2_andar.png', 133, 141);
+        game.load.spritesheet('pj1', '/assets/animations/PJ1_andar.png', 140, 140);
+        game.load.spritesheet('pj2', '/assets/animations/PJ2_andar.png', 140, 140);
+        game.load.spritesheet('pj3', '/assets/animations/PJ3_andar.png', 140, 140);
+        game.load.spritesheet('pj4', '/assets/animations/PJ4_andar.png', 140, 140);
         /*game.load.spritesheet('pj3pistola', '/assets/animations/PJ3_pistola.png', 168, 140);
         game.load.spritesheet('pj4pistola', '/assets/animations/PJ4_pistola.png', 163, 140);*/
         game.load.image('bgClaro', '/assets/images/escenario_edificio.png', 2920, 1920);
@@ -59,7 +61,7 @@ LastEscape.preloadLevelState.prototype = {
         carga = game.add.sprite(40, 610, 'loading');
 		carga.animations.add('loading');
 		carga.animations.play('loading', 10, true);
-        game.state.start('levelState');
+		game.state.start('levelState');
     },
 
     update: function() {

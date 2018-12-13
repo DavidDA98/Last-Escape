@@ -26,5 +26,5 @@ function botonCerrar () {
 }
 
 function botonEdificio () {
-    game.state.start('selectCharacterState');
+    game.state.start('selectNumPlayersState');
 }

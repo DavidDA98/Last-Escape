@@ -18,7 +18,7 @@ LastEscape.menuState.prototype = {
     },
 
     update: function() {
-        
+    	
     },
 }
 
