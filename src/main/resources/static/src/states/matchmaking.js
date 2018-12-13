@@ -20,16 +20,18 @@ LastEscape.matchmakingState.prototype = {
     update: function() {
     	var msg = {metodo: "getMatchmakingState"};
 		game.connection.send(JSON.stringify(msg));
-		
-		if (game.gameState == 1) {
-			game.state.start('preloadLevelState');
-		}
-		
-		if (game.jugadoresOnline == game.jugadoresNecesarios) {
-			var msg = {metodo: "getGameState"};
-			game.connection.send(JSON.stringify(msg));
-			var msg = {metodo: "comenzarJuego"};
-	    	game.connection.send(JSON.stringify(msg));
+
+		if (game.jugador1 !== undefined) {
+			if (game.gameState == 1) {
+				var msg = {metodo: "getGameState", id: game.jugador1.id};
+				game.connection.send(JSON.stringify(msg));
+				game.state.start('preloadLevelState');
+			}
+			
+			if (game.jugadoresOnline == game.jugadoresNecesarios) {
+				var msg = {metodo: "comenzarJuego"};
+		    	game.connection.send(JSON.stringify(msg));
+			}
 		}
     },
 }

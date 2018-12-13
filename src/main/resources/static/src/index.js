@@ -45,83 +45,45 @@ game.connection.onmessage = function(msg) {
 			switch (game.jugador1.id) {
 			case 1:
 				game.jugador1 = data.jugador1;
-				
 				game.jugador2 = data.jugador2;
-				if (data.disparo2.hayDisparo == 1) {
-					fireBulletOtherPlayer(data.disparo2.x, data.disparo2.y);
-				}
 				
 				if (game.jugadoresOnline > 2) {
 					game.jugador3 = data.jugador3;
-					if (data.disparo3.hayDisparo == 1) {
-						fireBulletOtherPlayer(data.disparo3.x, data.disparo3.y);
-					}
 				}
+				
 				if (game.jugadoresOnline > 3) {
 					game.jugador4 = data.jugador4;
-					if (data.disparo4.hayDisparo == 1) {
-						fireBulletOtherPlayer(data.disparo4.x, data.disparo4.y);
-					}
 				}
+				
 				break;
 			case 2:
 				game.jugador1 = data.jugador2;
-				
 				game.jugador2 = data.jugador1;
-				if (data.disparo1.hayDisparo == 1) {
-					fireBulletOtherPlayer(data.disparo1.x, data.disparo1.y);
-				}
 				
 				if (game.jugadoresOnline > 2) {
 					game.jugador3 = data.jugador3;
-					if (data.disparo3.hayDisparo == 1) {
-						fireBulletOtherPlayer(data.disparo3.x, data.disparo3.y);
-					}
 				}
+			
 				if (game.jugadoresOnline > 3) {
 					game.jugador4 = data.jugador4;
-					if (data.disparo4.hayDisparo == 1) {
-						fireBulletOtherPlayer(data.disparo4.x, data.disparo4.y);
-					}
 				}
+				
 				break;
 			case 3:
 				game.jugador1 = data.jugador3;
-				
 				game.jugador2 = data.jugador2;
-				if (data.disparo2.hayDisparo == 1) {
-					fireBulletOtherPlayer(data.disparo2.x, data.disparo2.y);
-				}
-				
 				game.jugador3 = data.jugador1;
-				if (data.disparo1.hayDisparo == 1) {
-					fireBulletOtherPlayer(data.disparo1.x, data.disparo1.y);
-				}
 				
 				if (game.jugadoresOnline > 3) {
 					game.jugador4 = data.jugador4;
-					if (data.disparo4.hayDisparo == 1) {
-						fireBulletOtherPlayer(data.disparo4.x, data.disparo4.y);
-					}
 				}
+				
 				break;
 			case 4:
 				game.jugador1 = data.jugador4;
-				
 				game.jugador2 = data.jugador2;
-				if (data.disparo2.hayDisparo == 1) {
-					fireBulletOtherPlayer(data.disparo2.x, data.disparo2.y);
-				}
-				
 				game.jugador3 = data.jugador3;
-				if (data.disparo3.hayDisparo == 1) {
-					fireBulletOtherPlayer(data.disparo3.x, data.disparo3.y);
-				}
-				
 				game.jugador4 = data.jugador1;
-				if (data.disparo1.hayDisparo == 1) {
-					fireBulletOtherPlayer(data.disparo1.x, data.disparo1.y);
-				}
 				break;
 			}
 			
@@ -137,6 +99,22 @@ game.connection.onmessage = function(msg) {
 			if (data.id == game.jugador2.id){
 				game.jugador2.skin = data.skin;
 			}
+			break;
+			
+		case "putDisparo":
+			if (data.id != game.jugador1.id) {
+				if (data.id == game.jugador2.id) {
+					fireBulletOtherPlayer(data.disparo.x, data.disparo.y, game.jugador2.x, game.jugador2.y);
+				} else if (data.id == game.jugador3.id) {
+					fireBulletOtherPlayer(data.disparo.x, data.disparo.y, game.jugador3.x, game.jugador3.y);
+				} else if (data.id == game.jugador4.id) {
+					fireBulletOtherPlayer(data.disparo.x, data.disparo.y, game.jugador4.x, game.jugador4.y);
+				}
+			}
+			
+			break;
+		case "sendCadaver":
+			crearCadaver(data.x, data.y, data.items);
 			break;
 	}
 }

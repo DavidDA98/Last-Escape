@@ -26,8 +26,6 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 	Map<Long, Player> players = new ConcurrentHashMap<>();
 	AtomicLong nextId = new AtomicLong(0);
 	
-	Shot[] disparos = {new Shot(), new Shot(), new Shot(), new Shot()};
-	
 	int[] spawnsX = {480, 2750, 2560, 260};
 	int[] spawnsY = {370, 170, 1750, 1770};
 	
@@ -126,23 +124,19 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					
 					wNode.put("metodo", "getGameState");
 					
-					wNode.putPOJO("jugador1", players.get(id));					
-					wNode.putPOJO("disparo1", disparos[0]);
+					wNode.putPOJO("jugador1", players.get(id));
 					
 					id++;
-					wNode.putPOJO("jugador2", players.get(id));					
-					wNode.putPOJO("disparo2", disparos[1]);
+					wNode.putPOJO("jugador2", players.get(id));
 					
 					if (jugadoresOnline > 2) {
 						id++;
-						wNode.putPOJO("jugador3", players.get(id));					
-						wNode.putPOJO("disparo3", disparos[2]);
+						wNode.putPOJO("jugador3", players.get(id));
 					}
 					
 					if (jugadoresOnline > 3) {
 						id++;
-						wNode.putPOJO("jugador4", players.get(id));					
-						wNode.putPOJO("disparo4", disparos[3]);
+						wNode.putPOJO("jugador4", players.get(id));
 					}
 					
 					array = mapper.valueToTree(listaObjetos);
@@ -153,11 +147,6 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					msg = wNode.toString();
 					session.sendMessage(new TextMessage(msg));
 					
-					disparos[0].setDisparo(0);
-					disparos[1].setDisparo(0);
-					disparos[2].setDisparo(0);
-					disparos[3].setDisparo(0);
-					
 					break;
 				
 				//Coloca el nuevo item en la lista de objetos
@@ -165,13 +154,22 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					listaObjetos[rNode.get("indice").asInt()] = rNode.get("item").asText();
 					break;
 					
-				//Actualiza si un jugador ha disparado
+				//Envia el disparo a los demas jugadores
 				case "putDisparo":
-					int idShot = rNode.get("id").asInt() - 1;
+					for(WebSocketSession s : sessions) {
+						if (s != session) {
+							s.sendMessage(message);
+						}
+					}
+					break;
 					
-					disparos[idShot].setX(rNode.path("disparo").get("x").asInt());
-					disparos[idShot].setY(rNode.path("disparo").get("y").asInt());
-					disparos[idShot].setDisparo(rNode.path("disparo").get("disparo").asInt());
+				//Envia el cadaver a los demas jugadores
+				case "sendCadaver":
+					for(WebSocketSession s : sessions) {
+						if (s != session) {
+							s.sendMessage(message);
+						}
+					}
 					break;
 				
 				//Actualiza los fusibles restantes

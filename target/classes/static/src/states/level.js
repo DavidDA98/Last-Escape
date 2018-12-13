@@ -43,6 +43,9 @@ var spriteCuadro;
 var inventarioAbierto = false;
 var listaObjetos = [];
 
+//Variables cadaveres
+var grupoCadaveres;
+
 //Variables interfaz
 var barraVida;
 var barraBateria;
@@ -173,6 +176,8 @@ LastEscape.levelState.prototype = {
         hit.scale.setTo(5, 5);
         game.physics.enable(hit, Phaser.Physics.ARCADE);
         hit.kill();
+        
+        grupoCadaveres = game.add.group();
 
         //Interfaz
         inventarioUI = game.add.sprite(820, 540, 'inventario');
@@ -321,13 +326,7 @@ LastEscape.levelState.prototype = {
         putPlayer();
         getGameState();
         
-        game.player2.x = game.jugador2.x;
-    	game.player2.y = game.jugador2.y;
-    	game.player2.rotation = game.jugador2.rotacion;
-        
-        if (game.jugador2.salida == 1) {
-        	acabarPartida();
-        }
+        updateOtherPlayers();
     }
 }
 
@@ -375,6 +374,36 @@ function playerMovement () {
     player1.rotation = game.physics.arcade.angleToPointer(player1);
 }
 
+function updateOtherPlayers() {
+	game.player2.x = game.jugador2.x;
+	game.player2.y = game.jugador2.y;
+	game.player2.rotation = game.jugador2.rotacion;
+    
+    if (game.jugador2.salida == 1) {
+    	acabarPartida();
+    }
+	
+	if (game.jugadoresOnline > 2) {
+		game.player3.x = game.jugador3.x;
+		game.player3.y = game.jugador3.y;
+		game.player3.rotation = game.jugador3.rotacion;
+	    
+	    if (game.jugador3.salida == 1) {
+	    	acabarPartida();
+	    }
+    }
+	
+    if (game.jugadoresOnline > 3) {
+    	game.player4.x = game.jugador4.x;
+    	game.player4.y = game.jugador4.y;
+    	game.player4.rotation = game.jugador4.rotacion;
+        
+        if (game.jugador4.salida == 1) {
+        	acabarPartida();
+        }
+    }
+}
+
 //Dispara una bala y establece el tiempo de espera hasta la siguiente
 function fireBullet() {
     if(game.time.now > bulletTime) {
@@ -392,10 +421,10 @@ function fireBullet() {
     }
 }
 
-function fireBulletOtherPlayer(balaX, balaY) {
+function fireBulletOtherPlayer(balaX, balaY, jugX, jugY) {
 	bullet = bullets.getFirstExists(false);
 	if(bullet) {
-        bullet.reset(game.player2.x, game.player2.y);
+        bullet.reset(jugX, jugY);
         bullet.rotation = game.physics.arcade.angleToXY(bullet, balaX, balaY);
         game.physics.arcade.moveToXY(bullet, balaX, balaY, 400);
         bulletSound.play();
@@ -459,14 +488,14 @@ function testPlayers(x, y) {
         }
     }
 
-    if (testP3 == true && game.jugadoresOnline > 2) {
+    if (testP3 == true && game.jugadoresOnline > 2 && game.jugador3.muerto == 0) {
         if (x >= game.player3.x - 31 && x < game.player3.x + 36 && y >= game.player3.y - 28 && y < game.player3.y + 29) {
         	game.player3.visible = true;
             testP3 = false;
         }
     }
 
-    if (testP4 == true && game.jugadoresOnline > 3) {
+    if (testP4 == true && game.jugadoresOnline > 3 && game.jugador4.muerto == 0) {
         if (x >= game.player4.x - 31 && x < game.player4.x + 36 && y >= game.player4.y - 28 && y < game.player4.y + 29) {
         	game.player4.visible = true;
             testP4 = false;
@@ -796,6 +825,13 @@ function controladorSala() {
 //Funcion que hace reaparecer al jugador
 function jugadorMuerto() {
     if (jugadorVivo) {
+    	crearCadaver(player1.x, player1.y, player1.items);
+    	sendCadaver(player1.x, player1.y, player1.items);
+    	player1.items[0] = 'vacio';
+    	player1.items[1] = 'vacio';
+    	player1.items[2] = 'vacio';
+    	player1.items[3] = 'vacio';
+    	renderInventario();
         player1.kill();
         jugadorVivo = false;
         respawnTime = game.time.now + 5000;
@@ -810,6 +846,12 @@ function jugadorMuerto() {
         jugadorVivo = true;
     }
 
+}
+
+function crearCadaver(x, y, items) {
+	var cad = game.add.sprite(x, y, 'test');
+	cad.items = items;
+	grupoCadaveres.add(cad);
 }
 
 //Funcion que se llama al salir por la puerta
@@ -845,7 +887,7 @@ function putItem(index) {
 }
 
 function putDisparo(x, y) {
-    game.disparo = {x: x, y: y, disparo: 1};
+    game.disparo = {x: x, y: y};
     var msg = {metodo: "putDisparo", id: game.jugador1.id, disparo: game.disparo};
     game.connection.send(JSON.stringify(msg));
 }
@@ -857,5 +899,10 @@ function getID() {
 
 function putFusibles() {
 	var msg = {metodo: "putFusibles", fusiblesRestantes: fusiblesRestantes};
+	game.connection.send(JSON.stringify(msg));
+}
+
+function sendCadaver(x, y, items) {
+	var msg = {metodo: "sendCadaver", x: x, y: y, items: items};
 	game.connection.send(JSON.stringify(msg));
 }
