@@ -5,12 +5,33 @@
 LastEscape.preloadLevelState.prototype = {
 		
     preload: function() {
+    	//PJs
         game.load.spritesheet('pj1', '/assets/animations/PJ1_andar.png', 140, 140);
         game.load.spritesheet('pj2', '/assets/animations/PJ2_andar.png', 140, 140);
         game.load.spritesheet('pj3', '/assets/animations/PJ3_andar.png', 140, 140);
         game.load.spritesheet('pj4', '/assets/animations/PJ4_andar.png', 140, 140);
-        /*game.load.spritesheet('pj3pistola', '/assets/animations/PJ3_pistola.png', 168, 140);
-        game.load.spritesheet('pj4pistola', '/assets/animations/PJ4_pistola.png', 163, 140);*/
+        
+        game.load.spritesheet('pj1pistola', '/assets/animations/PJ1_pistola.png', 160, 140);
+        game.load.spritesheet('pj2pistola', '/assets/animations/PJ2_pistola.png', 160, 140);
+        game.load.spritesheet('pj3pistola', '/assets/animations/PJ3_pistola.png', 160, 140);
+        game.load.spritesheet('pj4pistola', '/assets/animations/PJ4_pistola.png', 160, 140);
+        
+        game.load.spritesheet('pj1ballesta', '/assets/animations/PJ1_ballesta.png', 175, 140);
+        game.load.spritesheet('pj2ballesta', '/assets/animations/PJ2_ballesta.png', 175, 140);
+        game.load.spritesheet('pj3ballesta', '/assets/animations/PJ3_ballesta.png', 175, 140);
+        game.load.spritesheet('pj4ballesta', '/assets/animations/PJ4_ballesta.png', 175, 140);
+        
+        game.load.spritesheet('pj1fusil', '/assets/animations/PJ1_fusil.png', 200, 140);
+        game.load.spritesheet('pj2fusil', '/assets/animations/PJ2_fusil.png', 200, 140);
+        game.load.spritesheet('pj3fusil', '/assets/animations/PJ3_fusil.png', 200, 140);
+        game.load.spritesheet('pj4fusil', '/assets/animations/PJ4_fusil.png', 200, 140);
+        
+        game.load.spritesheet('pj1subfusil', '/assets/animations/PJ1_subfusil.png', 175, 140);
+        game.load.spritesheet('pj2subfusil', '/assets/animations/PJ2_subfusil.png', 175, 140);
+        game.load.spritesheet('pj3subfusil', '/assets/animations/PJ3_subfusil.png', 175, 140);
+        game.load.spritesheet('pj4subfusil', '/assets/animations/PJ4_subfusil.png', 175, 140);
+        
+        //Mundo
         game.load.image('bgClaro', '/assets/images/escenario_edificio.png', 2920, 1920);
         game.load.image('colisionBox', '/assets/images/colision.png');
         game.load.image('bala_pistola', '/assets/images/balas/bala_pistola.png');
@@ -23,9 +44,9 @@ LastEscape.preloadLevelState.prototype = {
         //Armas
         game.load.image('cuchillo', '/assets/images/armas/cuchillo.png');
         game.load.image('pistola', '/assets/images/armas/pistola.png');
-        /*game.load.image('ballesta', '/assets/images/armas/ballesta.png');
+        game.load.image('ballesta', '/assets/images/armas/ballesta.png');
         game.load.image('fusil', '/assets/images/armas/fusil.png');
-        game.load.image('subfusil', '/assets/images/armas/subfusil.png');*/
+        game.load.image('subfusil', '/assets/images/armas/subfusil.png');
 
         //Objetos
         game.load.image('botiquin', '/assets/images/objetos/obj_botiquin.png');

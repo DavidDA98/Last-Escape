@@ -13,7 +13,7 @@ LastEscape.matchmakingState.prototype = {
     },
 
     create: function() {
-    	var msg = {metodo: "createPlayer", skin: game.skin};
+    	var msg = {metodo: "createPlayer", skin: game.skin + 'pistola'};
     	game.connection.send(JSON.stringify(msg));
     },
 
