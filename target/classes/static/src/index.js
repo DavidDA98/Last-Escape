@@ -35,7 +35,6 @@ game.connection.onmessage = function(msg) {
 			break;
 			
 		case "createPlayer":
-			console.log(data.jugador.id);
 			game.jugador1 = data.jugador;
 			game.jugador1.skin = game.skin;
 			break;
@@ -115,6 +114,10 @@ game.connection.onmessage = function(msg) {
 			break;
 		case "sendCadaver":
 			crearCadaver(data.x, data.y, data.items);
+			break;
+			
+		case "cadaverDestruido":
+			grupoCadaveres.forEach(destruirCadaver, this, true, data.x, data.y, data.item);
 			break;
 	}
 }

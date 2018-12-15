@@ -30,7 +30,7 @@ LastEscape.selectCharacterState.prototype = {
 }
 
 function botonAtras4 () {
-    game.state.start('selectMapState');
+    game.state.start('selectNumPlayersState');
 }
 
 function botonPersonaje1 () {

@@ -9,25 +9,31 @@ LastEscape.selectNumPlayersState.prototype = {
 
     create: function() {
         game.add.tileSprite(0, 0, 1280, 720, 'fondoDesenfocado');
-        key2 = game.input.keyboard.addKey(Phaser.Keyboard.TWO);
-        key3 = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
-        key4 = game.input.keyboard.addKey(Phaser.Keyboard.FOUR);
+        game.add.button(150, 250, 'boton2jugadores', boton2Jugadores, this, 1, 0);
+        game.add.button(515, 250, 'boton3jugadores', boton3Jugadores, this, 1, 0);
+        game.add.button(880, 250, 'boton4jugadores', boton4Jugadores, this, 1, 0);
+        game.add.button(1075, 150, 'atras', botonAtras, this, 1, 0);
     },
 
     update: function() {
-    	if (key2.isDown){
-            game.jugadoresNecesarios = 2;
-            game.state.start('selectCharacterState');
-        }
-
-        if (key3.isDown){
-        	game.jugadoresNecesarios = 3;
-            game.state.start('selectCharacterState');
-        }
-
-        if (key4.isDown){
-        	game.jugadoresNecesarios = 4;
-            game.state.start('selectCharacterState');
-        }
     }
+}
+
+function boton2Jugadores () {
+    game.jugadoresNecesarios = 2;
+    game.state.start('selectCharacterState');
+}
+
+function boton3Jugadores () {
+    game.jugadoresNecesarios = 3;
+    game.state.start('selectCharacterState');
+}
+
+function boton4Jugadores () {
+    game.jugadoresNecesarios = 4;
+    game.state.start('selectCharacterState');
+}
+
+function botonAtras () {
+    game.state.start('selectMapState');
 }

@@ -171,6 +171,15 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 						}
 					}
 					break;
+					
+				//Envia los datos del cadaver destruido a los demas jugadores
+				case "cadaverDestruido":
+					for(WebSocketSession s : sessions) {
+						if (s != session) {
+							s.sendMessage(message);
+						}
+					}
+					break;
 				
 				//Actualiza los fusibles restantes
 				case "putFusibles":

@@ -125,6 +125,9 @@ LastEscape.levelState.prototype = {
         bulletSound = game.add.audio('sonido_pistola',0.05);
         reloadSound = game.add.audio('sonido_recargar_pistola',0.05);
 
+        //Cadaveres
+        grupoCadaveres = game.add.group();
+        
         //Jugadores
         grupoJugadores = game.add.group();
         spawnX = game.jugador1.x;
@@ -176,8 +179,6 @@ LastEscape.levelState.prototype = {
         hit.scale.setTo(5, 5);
         game.physics.enable(hit, Phaser.Physics.ARCADE);
         hit.kill();
-        
-        grupoCadaveres = game.add.group();
 
         //Interfaz
         inventarioUI = game.add.sprite(820, 540, 'inventario');
@@ -270,6 +271,7 @@ LastEscape.levelState.prototype = {
         game.physics.arcade.overlap(hit, grupoJugadores, function(p1, p2){
             p2.vida -= 10;
         });
+        game.physics.arcade.overlap(player1, grupoCadaveres, controladorCadaveres);
 
         if (!game.physics.arcade.overlap(player1, inventarios, colisionInventario) && inventarioAbierto) {
             mostrarInventario(0);
@@ -849,9 +851,71 @@ function jugadorMuerto() {
 }
 
 function crearCadaver(x, y, items) {
-	var cad = game.add.sprite(x, y, 'test');
-	cad.items = items;
-	grupoCadaveres.add(cad);
+	if (items[0] !== 'vacio') {
+		var cad = game.add.sprite(x - 15, y - 15, items[0]);
+		cad.scale.setTo(0.2, 0.2);
+		game.physics.enable(cad, Phaser.Physics.ARCADE);
+		grupoCadaveres.add(cad);
+	}
+	
+	if (items[1] !== 'vacio') {
+		var cad = game.add.sprite(x + 15, y - 15, items[1]);
+		cad.scale.setTo(0.2, 0.2);
+		game.physics.enable(cad, Phaser.Physics.ARCADE);
+		grupoCadaveres.add(cad);
+	}
+
+	if (items[2] !== 'vacio') {
+		var cad = game.add.sprite(x - 15, y + 15, items[2]);
+		cad.scale.setTo(0.2, 0.2);
+		game.physics.enable(cad, Phaser.Physics.ARCADE);
+		grupoCadaveres.add(cad);
+	}
+	
+	if (items[3] !== 'vacio') {
+		var cad = game.add.sprite(x + 15, y + 15, items[3]);
+		cad.scale.setTo(0.2, 0.2);
+		game.physics.enable(cad, Phaser.Physics.ARCADE);
+		grupoCadaveres.add(cad);
+	}
+}
+
+function controladorCadaveres(p, cadaver) {
+    if (eKey.isDown){
+        if (!esperarE) {
+        	if (player1.items[0] === 'vacio') {
+        		cadaverDestruido(cadaver.x, cadaver.y, cadaver.key);
+        		player1.items[0] = cadaver.key;
+        		renderInventario();
+            	cadaver.destroy();
+        	} else if (player1.items[1] === 'vacio') {
+        		cadaverDestruido(cadaver.x, cadaver.y, cadaver.key);
+        		player1.items[1] = cadaver.key;
+        		renderInventario();
+            	cadaver.destroy();
+        	} else if (player1.items[2] === 'vacio') {
+        		cadaverDestruido(cadaver.x, cadaver.y, cadaver.key);
+        		player1.items[2] = cadaver.key;
+        		renderInventario();
+            	cadaver.destroy();
+        	} else if (player1.items[3] === 'vacio') {
+        		cadaverDestruido(cadaver.x, cadaver.y, cadaver.key);
+        		player1.items[3] = cadaver.key;
+        		renderInventario();
+            	cadaver.destroy();
+        	}
+        }
+    }
+
+    if (eKey.isUp) {
+        esperarE = false;
+    }
+}
+
+function destruirCadaver(cadaver, x, y, item) {
+	if (cadaver.x == x && cadaver.y == y && cadaver.key == item) {
+		cadaver.destroy();
+	}
 }
 
 //Funcion que se llama al salir por la puerta
@@ -904,5 +968,10 @@ function putFusibles() {
 
 function sendCadaver(x, y, items) {
 	var msg = {metodo: "sendCadaver", x: x, y: y, items: items};
+	game.connection.send(JSON.stringify(msg));
+}
+
+function cadaverDestruido(x, y, item) {
+	var msg = {metodo: "cadaverDestruido", x: x, y: y, item: item};
 	game.connection.send(JSON.stringify(msg));
 }

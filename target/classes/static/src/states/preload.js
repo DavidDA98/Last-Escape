@@ -36,6 +36,9 @@ LastEscape.preloadState.prototype = {
         game.load.image('pj4parado', '/assets/images/PJ4_parado.png');
         game.load.image('login', '/assets/images/inicio_sesion.png');
         game.load.image('esperando_jugador', '/assets/images/esperando_jugador.png');
+        game.load.image('boton2jugadores', '/assets/images/boton_2_jugadores.png');
+        game.load.image('boton3jugadores', '/assets/images/boton_3_jugadores.png');
+        game.load.image('boton4jugadores', '/assets/images/boton_4_jugadores.png');
     },
 
     create: function() {
