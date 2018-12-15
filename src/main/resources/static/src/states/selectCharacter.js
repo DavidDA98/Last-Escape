@@ -9,7 +9,6 @@ LastEscape.selectCharacterState.prototype = {
     },
 
     create: function() {
-    	console.log(game.jugadoresNecesarios);
         game.add.tileSprite(0, 0, 1280, 720, 'fondoDesenfocado');
         game.add.tileSprite(280, 90, 720, 120, 'selec_personaje');
         atras4 = game.add.button(1050, 120, 'atras', botonAtras4, this, 1, 0);

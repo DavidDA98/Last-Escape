@@ -30,8 +30,8 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 	int[] spawnsY = {370, 170, 1750, 1770};
 	
 	String[] listaObjetos = {
-			"vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio",
-		    "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", 
+			"ballesta", "fusil", "fusil", "subfusil", "subfusil", "subfusil", "subfusil", "vacio", "vacio", "vacio", "vacio",
+		    "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "vacio", "balas", "balas", "balas", "balas", 
 		    "fusible", "fusible", "fusible", "fusible", "botiquin", "botiquin", "botiquin", "botiquin", "botiquin", "botiquin",
 		    "identificacion1", "identificacion2", "identificacion3", "identificacion4", "identificacion5", "identificacion6",
 		    "medicina", "medicina", "medicina", "medicina", "medicina", "medicina", "medicina", "medicina", "medicina", "medicina",
@@ -92,8 +92,6 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					
 				//Actualiza la posicion del jugador	
 				case "putPlayer":
-					rNode.get("jugador");
-					
 					players.get(rNode.path("jugador").get("id").asLong()).setX(
 						rNode.path("jugador").get("x").asInt()
 					);
@@ -216,9 +214,9 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 		if (id == 1) {
 			player.setX(spawnsX[0]);
 			player.setY(spawnsY[0]);
-			mezclarArray(listaObjetos);
-			mezclarArray(listaObjetos);
-			mezclarArray(listaObjetos);
+			//mezclarArray(listaObjetos);
+			//mezclarArray(listaObjetos);
+			//mezclarArray(listaObjetos);
 		} else if (id == 2 ){
 			player.setX(spawnsX[1]);
 			player.setY(spawnsY[1]);

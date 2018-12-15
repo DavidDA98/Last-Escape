@@ -33,6 +33,7 @@ var spriteArma = new Array(2);
 var inventarios = new Array(64);
 var index = 0;
 var esperarE = false;
+var esperarQ = false;
 var esperar1 = false;
 var esperar2 = false;
 var esperar3 = false;
@@ -42,6 +43,7 @@ var spriteObjeto;
 var spriteCuadro;
 var inventarioAbierto = false;
 var listaObjetos = [];
+var listaArmas = ['fusil', 'pistola', 'ballesta', 'subfusil'];
 
 //Variables cadaveres
 var grupoCadaveres;
@@ -94,7 +96,7 @@ LastEscape.levelState.prototype = {
         lKey = game.input.keyboard.addKey(Phaser.Keyboard.L);
         rKey = game.input.keyboard.addKey(Phaser.Keyboard.R);
         eKey = game.input.keyboard.addKey(Phaser.Keyboard.E);
-        fKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
+        qKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
         key1 = game.input.keyboard.addKey(Phaser.Keyboard.ONE);
         key2 = game.input.keyboard.addKey(Phaser.Keyboard.TWO);
         key3 = game.input.keyboard.addKey(Phaser.Keyboard.THREE);
@@ -185,13 +187,8 @@ LastEscape.levelState.prototype = {
         inventarioUI.fixedToCamera = true;
 
         player1.armas[0] = 'pistola';
-        spriteArma[0] = game.add.sprite(1110, 570, 'pistola');
-        spriteArma[0].fixedToCamera = true;
-
-        player1.armas[1] = 'cuchillo';
-        spriteArma[1] = game.add.sprite(1205, 563, 'cuchillo');
-        spriteArma[1].scale.setTo(0.6, 0.6);
-        spriteArma[1].fixedToCamera = true;
+        player1.armas[1] = 'fusil';
+        renderArmas();
 
         barraVida = game.add.sprite(20, 650, 'barraVida', 10);
         barraVida.fixedToCamera = true;
@@ -249,6 +246,18 @@ LastEscape.levelState.prototype = {
         if (spaceKey.isUp && esperarSpace) {
             hit.kill();
             esperarSpace = false;
+        }
+        
+        //Cambiar de arma
+        if (qKey.isDown) {
+            if (!esperarQ) {
+            	cambiarArma();
+                esperarQ = true;
+            }
+        }
+
+        if (qKey.isUp && esperarQ) {
+            esperarQ = false;
         }
 
         //Colisiones
@@ -380,6 +389,7 @@ function updateOtherPlayers() {
 	game.player2.x = game.jugador2.x;
 	game.player2.y = game.jugador2.y;
 	game.player2.rotation = game.jugador2.rotacion;
+	game.player2.loadTexture(game.jugador2.skin);
     
     if (game.jugador2.salida == 1) {
     	acabarPartida();
@@ -389,6 +399,7 @@ function updateOtherPlayers() {
 		game.player3.x = game.jugador3.x;
 		game.player3.y = game.jugador3.y;
 		game.player3.rotation = game.jugador3.rotacion;
+		game.player3.loadTexture(game.jugador3.skin);
 	    
 	    if (game.jugador3.salida == 1) {
 	    	acabarPartida();
@@ -399,6 +410,7 @@ function updateOtherPlayers() {
     	game.player4.x = game.jugador4.x;
     	game.player4.y = game.jugador4.y;
     	game.player4.rotation = game.jugador4.rotacion;
+    	game.player4.loadTexture(game.jugador4.skin);
         
         if (game.jugador4.salida == 1) {
         	acabarPartida();
@@ -520,14 +532,14 @@ function renderInventario() {
     }
 }
 
-/*function renderArmas() {
+function renderArmas() {
     arma = player1.armas[0];
     if (spriteArma[0] !== undefined) {
         spriteArma[0].kill();
     }
-    if (arma !== undefined) {
-        spriteArma[0] = game.add.sprite(1149, 608, arma);
-        spriteArma[0].scale.setTo(0.3, 0.3);
+    if (arma !== 'vacio') {
+        spriteArma[0] = game.add.sprite(1110, 570, arma);
+        spriteArma[0].scale.setTo(0.6, 0.6);
         spriteArma[0].fixedToCamera = true;
     }
 
@@ -535,12 +547,25 @@ function renderInventario() {
     if (spriteArma[1] !== undefined) {
         spriteArma[1].kill();
     }
-    if (arma !== undefined) {
+    if (arma !== 'vacio') {
         spriteArma[1] = game.add.sprite(1205, 547, arma);
         spriteArma[1].scale.setTo(0.3, 0.3);
         spriteArma[1].fixedToCamera = true;
     }
-}*/
+}
+
+function cambiarArma() {
+	if (player1.armas[0] !== 'vacio' && player1.armas[1] !== 'vacio') {
+		var temp = player1.armas[0];
+		player1.armas[0] = player1.armas[1];
+		player1.armas[1] = temp;
+		renderArmas();
+		
+		player1.loadTexture(game.skin + player1.armas[0]);
+		game.jugador1.skin = player1.key;
+		//walk = player1.animations.add('walk');
+	}
+}
 
 //Coloca todos los inventario que contienen objetos por el mapa
 function generarInventarios(tile) {
@@ -583,17 +608,19 @@ function colisionInventario(player, inventario) {
         }
     }
 
-    if (key3.isDown && inventarioAbierto){
-        if (!esperar3) {
-            mostrarInventario(1, inventario.contenido, 2);
-            esperar3 = true;
+    if (!listaArmas.includes(listaObjetos[inventario.contenido])) {
+    	if (key3.isDown && inventarioAbierto){
+            if (!esperar3) {
+                mostrarInventario(1, inventario.contenido, 2);
+                esperar3 = true;
+            }
         }
-    }
 
-    if (key4.isDown && inventarioAbierto){
-        if (!esperar4) {
-            mostrarInventario(1, inventario.contenido, 3);
-            esperar4 = true;
+        if (key4.isDown && inventarioAbierto){
+            if (!esperar4) {
+                mostrarInventario(1, inventario.contenido, 3);
+                esperar4 = true;
+            }
         }
     }
 
@@ -688,28 +715,47 @@ function mostrarInventario(modo, indice, pos) {
     }
     
     if(modo === 1) {
-        if(player1.items[pos] === 'vacio') {
-            player1.items[pos] = listaObjetos[indice];
-            listaObjetos[indice] = 'vacio';
-            mostrarInventario(0);
-            renderInventario();
-        } else {
-            if (listaObjetos[indice] !== 'vacio') {
-                listaObjetos[indice] = player1.items[pos];
-                player1.items[pos] = spriteObjeto.key;
+    	if (listaArmas.includes(listaObjetos[indice])) {
+    		if(player1.armas[pos] === 'vacio') {
+    			player1.armas[pos] = listaObjetos[indice];
+    			listaObjetos[indice] = 'vacio';
+    			mostrarInventario(0);
+    			renderArmas();
+            } else {
+            	listaObjetos[indice] = player1.armas[pos];
+                player1.armas[pos] = spriteObjeto.key;
                 spriteObjeto.kill();
                 spriteObjeto.key = undefined;
-            } else {
-                listaObjetos[indice] = player1.items[pos];
-                player1.items[pos] = 'vacio';
+                
+                spriteObjeto = game.add.sprite(618, 338, listaObjetos[indice]);
+                spriteObjeto.scale.setTo(0.3, 0.3);
+                spriteObjeto.fixedToCamera = true;
+                renderArmas();
             }
-            spriteObjeto = game.add.sprite(618, 338, listaObjetos[indice]);
-            spriteObjeto.scale.setTo(0.3, 0.3);
-            spriteObjeto.fixedToCamera = true;
-            renderInventario();
-        }
-        
-        putItem(indice);
+    	} else {
+    		if(player1.items[pos] === 'vacio') {
+                player1.items[pos] = listaObjetos[indice];
+                listaObjetos[indice] = 'vacio';
+                mostrarInventario(0);
+                renderInventario();
+            } else {
+                if (listaObjetos[indice] !== 'vacio') {
+                    listaObjetos[indice] = player1.items[pos];
+                    player1.items[pos] = spriteObjeto.key;
+                    spriteObjeto.kill();
+                    spriteObjeto.key = undefined;
+                } else {
+                    listaObjetos[indice] = player1.items[pos];
+                    player1.items[pos] = 'vacio';
+                }
+                spriteObjeto = game.add.sprite(618, 338, listaObjetos[indice]);
+                spriteObjeto.scale.setTo(0.3, 0.3);
+                spriteObjeto.fixedToCamera = true;
+                renderInventario();
+            }
+    	}
+    	
+    	putItem(indice);
     }
 }
 
