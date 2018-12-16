@@ -86,7 +86,7 @@ game.connection.onmessage = function(msg) {
 				break;
 			}
 			
-			listaObjetos = data.items;
+			game.listaObjetos = data.items;
 			fusiblesRestantes = data.fusiblesRestantes;
 			break;
 			
@@ -103,11 +103,11 @@ game.connection.onmessage = function(msg) {
 		case "putDisparo":
 			if (data.id != game.jugador1.id) {
 				if (data.id == game.jugador2.id) {
-					fireBulletOtherPlayer(data.disparo.x, data.disparo.y, game.jugador2.x, game.jugador2.y);
+					fireBulletOtherPlayer(data.disparo.x, data.disparo.y, game.jugador2.x, game.jugador2.y, data.disparo.daño, data.disparo.velocidad);
 				} else if (data.id == game.jugador3.id) {
-					fireBulletOtherPlayer(data.disparo.x, data.disparo.y, game.jugador3.x, game.jugador3.y);
+					fireBulletOtherPlayer(data.disparo.x, data.disparo.y, game.jugador3.x, game.jugador3.y, data.disparo.daño, data.disparo.velocidad);
 				} else if (data.id == game.jugador4.id) {
-					fireBulletOtherPlayer(data.disparo.x, data.disparo.y, game.jugador4.x, game.jugador4.y);
+					fireBulletOtherPlayer(data.disparo.x, data.disparo.y, game.jugador4.x, game.jugador4.y, data.disparo.daño, data.disparo.velocidad);
 				}
 			}
 			

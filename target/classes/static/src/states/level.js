@@ -42,7 +42,6 @@ var esperarSpace = false;
 var spriteObjeto;
 var spriteCuadro;
 var inventarioAbierto = false;
-var listaObjetos = [];
 var listaArmas = ['fusil', 'pistola', 'ballesta', 'subfusil'];
 
 //Variables cadaveres
@@ -124,8 +123,14 @@ LastEscape.levelState.prototype = {
         bullets.setAll('checkWorldBounds', true);
 
         //Sonido disparo
-        bulletSound = game.add.audio('sonido_pistola',0.05);
-        reloadSound = game.add.audio('sonido_recargar_pistola',0.05);
+        balaPistola = game.add.audio('sonido_pistola',0.05);
+        balaSubfusil = game.add.audio('sonido_subfusil',0.05);
+        balaFusil = game.add.audio('sonido_fusil',0.05);
+        balaBallesta = game.add.audio('sonido_ballesta',0.05);
+        recargarPistola = game.add.audio('sonido_recargar_pistola',0.05);
+        recargarSubfusil = game.add.audio('sonido_recargar_subfusil',0.05);
+        recargarFusil = game.add.audio('sonido_recargar_fusil',0.05);
+        recargarBallesta = game.add.audio('sonido_recargar_ballesta',0.05);
 
         //Cadaveres
         grupoCadaveres = game.add.group();
@@ -149,6 +154,9 @@ LastEscape.levelState.prototype = {
         player1.items[1] = 'vacio';
         player1.items[2] = 'vacio';
         player1.items[3] = 'vacio';
+        
+        player1.armas[0] = 'pistola';
+        player1.armas[1] = 'vacio';
         
     	game.player2 = game.add.sprite(game.jugador2.x, game.jugador2.y, game.jugador2.skin, 0);
     	game.player2.scale.setTo(0.4, 0.4);
@@ -186,8 +194,6 @@ LastEscape.levelState.prototype = {
         inventarioUI = game.add.sprite(820, 540, 'inventario');
         inventarioUI.fixedToCamera = true;
 
-        player1.armas[0] = 'pistola';
-        player1.armas[1] = 'fusil';
         renderArmas();
 
         barraVida = game.add.sprite(20, 650, 'barraVida', 10);
@@ -201,6 +207,7 @@ LastEscape.levelState.prototype = {
         barraBateria = barraBateria.animations.getAnimation('bateria');
 
         mapaInventarios = game.add.tilemap('posInventarios', 20, 20);
+        index = 0;
         mapaInventarios.forEach(generarInventarios, this, 0, 0, 146, 96);
         llenarInventarios();
 
@@ -211,14 +218,14 @@ LastEscape.levelState.prototype = {
         game.physics.enable(salaDeControl, Phaser.Physics.ARCADE);
         salaDeControl.scale.setTo(5, 1);
 
-        /*bloqueoPuertas[0] = game.add.sprite(440, 20, 'colisionBox');
+        bloqueoPuertas[0] = game.add.sprite(440, 20, 'colisionBox');
         bloqueoPuertas[1] = game.add.sprite(1740, 1890, 'colisionBox');
         bloqueoPuertas[0].scale.setTo(2, 1);
         bloqueoPuertas[1].scale.setTo(2, 1);
         game.physics.enable(bloqueoPuertas[0], Phaser.Physics.ARCADE);
         game.physics.enable(bloqueoPuertas[1], Phaser.Physics.ARCADE);
         bloqueoPuertas[0].body.immovable = true;
-        bloqueoPuertas[1].body.immovable = true;*/
+        bloqueoPuertas[1].body.immovable = true;
 
         salida[0] = game.add.sprite(440, 0, 'colisionBox');
         salida[1] = game.add.sprite(1740, 1900, 'colisionBox');
@@ -266,7 +273,7 @@ LastEscape.levelState.prototype = {
             bullets.kill();
         });
         game.physics.arcade.collide(bullets, player1, function(p, bullets){
-            player1.vida -= 40;
+            player1.vida -= bullets.daño;
             actualizarVida();
             bullets.kill();
         });
@@ -425,30 +432,84 @@ function fireBullet() {
         if(bullet) {
             bullet.reset(player1.x, player1.y);
             bullet.rotation = game.physics.arcade.angleToPointer(bullet);
-            game.physics.arcade.moveToPointer(bullet, 400);
-            bulletTime = game.time.now + 600;
             cargador = cargador -1;
-            bulletSound.play();
             
-            putDisparo(game.input.worldX, game.input.worldY);
+            switch(player1.armas[0]) {
+	            case "pistola":
+	            	velocidad = 300;
+	            	bulletTime = game.time.now + 600;
+	            	bullet.daño = 40;
+	                balaPistola.play();
+	            	break;
+	            case "subfusil":
+	            	velocidad = 400;
+	            	bulletTime = game.time.now + 100;
+	            	bullet.daño = 10;
+	            	balaSubfusil.play();
+	            	break;
+	            case "fusil":
+	            	velocidad = 400;
+	            	bulletTime = game.time.now + 200;
+	            	bullet.daño = 20;
+	            	balaFusil.play();
+	            	break;
+	            case "ballesta":
+	            	velocidad = 200;
+	            	bulletTime = game.time.now + 6000;
+	            	bullet.daño = 100;
+	            	balaBallesta.play();
+	            	break;
+            }
+            
+            game.physics.arcade.moveToPointer(bullet, velocidad);
+            
+            putDisparo(game.input.worldX, game.input.worldY, bullet.daño, velocidad);
         }
     }
 }
 
-function fireBulletOtherPlayer(balaX, balaY, jugX, jugY) {
+function fireBulletOtherPlayer(balaX, balaY, jugX, jugY, daño, velocidad) {
 	bullet = bullets.getFirstExists(false);
 	if(bullet) {
         bullet.reset(jugX, jugY);
         bullet.rotation = game.physics.arcade.angleToXY(bullet, balaX, balaY);
-        game.physics.arcade.moveToXY(bullet, balaX, balaY, 400);
-        bulletSound.play();
+        bullet.daño = daño;
+        game.physics.arcade.moveToXY(bullet, balaX, balaY, velocidad);
+        switch (daño) {
+	        case 40:
+	        	balaPistola.play();
+	        	break;
+	        case 10:
+	        	balaSubfusil.play();
+	        	break;
+	        case 20:
+	        	balaFusil.play();
+	        	break;
+	        case 100:
+	        	balaBallesta.play();
+	        	break;
+        }
     }
 }
 
 function recargar() {
-        cargador = cargador +10;
-        reloadSound.play();
-        cargadores = cargadores - 1;
+    cargador = cargador +10;
+    cargadores = cargadores - 1;
+    
+    switch(player1.armas[0]) {
+        case "pistola":
+            recargarPistola.play();
+        	break;
+        case "subfusil":
+        	recargarSubfusil.play();
+        	break;
+        case "fusil":
+        	recargarFusil.play();
+        	break;
+        case "ballesta":
+        	recargarBallesta.play();
+        	break;
+    }
 }
 
 //Proyecta rayos desde el jugador hasta que colisionen con las paredes, despues los une para crear una máscara
@@ -538,7 +599,7 @@ function renderArmas() {
         spriteArma[0].kill();
     }
     if (arma !== 'vacio') {
-        spriteArma[0] = game.add.sprite(1110, 570, arma);
+        spriteArma[0] = game.add.sprite(1144, 602, arma);
         spriteArma[0].scale.setTo(0.6, 0.6);
         spriteArma[0].fixedToCamera = true;
     }
@@ -552,6 +613,9 @@ function renderArmas() {
         spriteArma[1].scale.setTo(0.3, 0.3);
         spriteArma[1].fixedToCamera = true;
     }
+    
+    player1.loadTexture(game.skin + player1.armas[0]);
+	game.jugador1.skin = player1.key;
 }
 
 function cambiarArma() {
@@ -560,10 +624,6 @@ function cambiarArma() {
 		player1.armas[0] = player1.armas[1];
 		player1.armas[1] = temp;
 		renderArmas();
-		
-		player1.loadTexture(game.skin + player1.armas[0]);
-		game.jugador1.skin = player1.key;
-		//walk = player1.animations.add('walk');
 	}
 }
 
@@ -608,7 +668,7 @@ function colisionInventario(player, inventario) {
         }
     }
 
-    if (!listaArmas.includes(listaObjetos[inventario.contenido])) {
+    if (!listaArmas.includes(game.listaObjetos[inventario.contenido])) {
     	if (key3.isDown && inventarioAbierto){
             if (!esperar3) {
                 mostrarInventario(1, inventario.contenido, 2);
@@ -697,8 +757,8 @@ function mostrarInventario(modo, indice, pos) {
             spriteCuadro = game.add.sprite(609, 329, 'cuadroInv');
             spriteCuadro.fixedToCamera = true;
 
-            if (listaObjetos[indice] !== 'vacio') {
-                spriteObjeto = game.add.sprite(618, 338, listaObjetos[indice]);
+            if (game.listaObjetos[indice] !== 'vacio') {
+                spriteObjeto = game.add.sprite(618, 338, game.listaObjetos[indice]);
                 spriteObjeto.scale.setTo(0.3, 0.3);
                 spriteObjeto.fixedToCamera = true;
             }
@@ -715,40 +775,40 @@ function mostrarInventario(modo, indice, pos) {
     }
     
     if(modo === 1) {
-    	if (listaArmas.includes(listaObjetos[indice])) {
+    	if (listaArmas.includes(game.listaObjetos[indice])) {
     		if(player1.armas[pos] === 'vacio') {
-    			player1.armas[pos] = listaObjetos[indice];
-    			listaObjetos[indice] = 'vacio';
+    			player1.armas[pos] = game.listaObjetos[indice];
+    			game.listaObjetos[indice] = 'vacio';
     			mostrarInventario(0);
     			renderArmas();
             } else {
-            	listaObjetos[indice] = player1.armas[pos];
+            	game.listaObjetos[indice] = player1.armas[pos];
                 player1.armas[pos] = spriteObjeto.key;
                 spriteObjeto.kill();
                 spriteObjeto.key = undefined;
                 
-                spriteObjeto = game.add.sprite(618, 338, listaObjetos[indice]);
+                spriteObjeto = game.add.sprite(618, 338, game.listaObjetos[indice]);
                 spriteObjeto.scale.setTo(0.3, 0.3);
                 spriteObjeto.fixedToCamera = true;
                 renderArmas();
             }
     	} else {
     		if(player1.items[pos] === 'vacio') {
-                player1.items[pos] = listaObjetos[indice];
-                listaObjetos[indice] = 'vacio';
+                player1.items[pos] = game.listaObjetos[indice];
+                game.listaObjetos[indice] = 'vacio';
                 mostrarInventario(0);
                 renderInventario();
             } else {
-                if (listaObjetos[indice] !== 'vacio') {
-                    listaObjetos[indice] = player1.items[pos];
+                if (game.listaObjetos[indice] !== 'vacio') {
+                    game.listaObjetos[indice] = player1.items[pos];
                     player1.items[pos] = spriteObjeto.key;
                     spriteObjeto.kill();
                     spriteObjeto.key = undefined;
                 } else {
-                    listaObjetos[indice] = player1.items[pos];
+                    game.listaObjetos[indice] = player1.items[pos];
                     player1.items[pos] = 'vacio';
                 }
-                spriteObjeto = game.add.sprite(618, 338, listaObjetos[indice]);
+                spriteObjeto = game.add.sprite(618, 338, game.listaObjetos[indice]);
                 spriteObjeto.scale.setTo(0.3, 0.3);
                 spriteObjeto.fixedToCamera = true;
                 renderInventario();
@@ -981,7 +1041,7 @@ function putPlayer() {
 	game.jugador1.x = player1.x;
 	game.jugador1.y = player1.y;
 	game.jugador1.rotacion = player1.rotation;
-	if (player1.vida >= 0) {
+	if (player1.vida > 0) {
 		game.jugador1.muerto = 0;
 	} else {
 		game.jugador1.muerto = 1;
@@ -992,12 +1052,12 @@ function putPlayer() {
 }
 
 function putItem(index) {
-	var msg = {metodo: "putItem", indice: index, item: listaObjetos[index]};
+	var msg = {metodo: "putItem", indice: index, item: game.listaObjetos[index]};
 	game.connection.send(JSON.stringify(msg));
 }
 
-function putDisparo(x, y) {
-    game.disparo = {x: x, y: y};
+function putDisparo(x, y, daño, velocidad) {
+    game.disparo = {x: x, y: y, daño: daño, velocidad: velocidad};
     var msg = {metodo: "putDisparo", id: game.jugador1.id, disparo: game.disparo};
     game.connection.send(JSON.stringify(msg));
 }

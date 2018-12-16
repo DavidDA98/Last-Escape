@@ -16,7 +16,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class WebsocketGameHandler extends TextWebSocketHandler {
@@ -38,6 +37,8 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 		    "pilas", "pilas", "pilas", "pilas", "pilas", "pilas", "pilas", "pilas", "balas", "balas", "balas", "balas", "balas",
 		    "balas", "balas", "balas"
 	};
+	
+	String[] listaObjetosMezclada = new String[listaObjetos.length];
 	
 	String idCorrecta = "identificacion" + ThreadLocalRandom.current().nextInt(1, 7);
 	int fusiblesRestantes = 4;
@@ -116,7 +117,6 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				//Devuelve el estado del juego	
 				case "getGameState":
 					wNode = mapper.createObjectNode();
-					ArrayNode array = mapper.createArrayNode();
 					
 					long id = 1;
 					
@@ -137,8 +137,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 						wNode.putPOJO("jugador4", players.get(id));
 					}
 					
-					array = mapper.valueToTree(listaObjetos);
-					wNode.set("items", array);
+					wNode.set("items", mapper.valueToTree(listaObjetosMezclada));
 					
 					wNode.put("fusiblesRestantes", fusiblesRestantes);
 					
@@ -149,7 +148,7 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 				
 				//Coloca el nuevo item en la lista de objetos
 				case "putItem":
-					listaObjetos[rNode.get("indice").asInt()] = rNode.get("item").asText();
+					listaObjetosMezclada[rNode.get("indice").asInt()] = rNode.get("item").asText();
 					break;
 					
 				//Envia el disparo a los demas jugadores
@@ -199,9 +198,11 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 					break;
 				
 				case "deletePlayers":
-					players.clear();
-					nextId.set(0);
-					gameInProgress = 0;
+					if (gameInProgress == 1) {
+						players.clear();
+						nextId = new AtomicLong(0);
+						gameInProgress = 0;
+					}
 					break;
 			}
 		}
@@ -214,9 +215,10 @@ public class WebsocketGameHandler extends TextWebSocketHandler {
 		if (id == 1) {
 			player.setX(spawnsX[0]);
 			player.setY(spawnsY[0]);
-			//mezclarArray(listaObjetos);
-			//mezclarArray(listaObjetos);
-			//mezclarArray(listaObjetos);
+			System.arraycopy(listaObjetos, 0, listaObjetosMezclada, 0, listaObjetos.length);
+			mezclarArray(listaObjetosMezclada);
+			mezclarArray(listaObjetosMezclada);
+			mezclarArray(listaObjetosMezclada);
 		} else if (id == 2 ){
 			player.setX(spawnsX[1]);
 			player.setY(spawnsY[1]);
