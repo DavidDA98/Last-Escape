@@ -13,7 +13,8 @@
 #### 10. Matchmaking.
 #### 11. Navegación de Pantallas.
 #### 12. Diagrama de Clases.
-#### 13. Cómo instalar.
+#### 13. Protocolo WebSockets.
+#### 14. Cómo instalar.
 
 ## 1. Autores:
 
@@ -109,7 +110,11 @@ Además también se tendrá en cuenta el tiempo que han tardado en escapar. De e
 
 ![DiagramaClases](/Imagenes/diagrama_clases.png)
 
-## 13. Cómo instalar:
+## 13. Protocolo WebSockets:
+
+Para realizar mensajes entre los clientes y el servidor mediante WebSockets, se ha usado el siguiente protocolo. Se ha usado una cadena en formato JSON que contiene un campo llamado "metodo" que almacena el tipo de mensaje que es. El servidor y los clientes leen primero este campo y actúan en consecuencia.
+
+## 14. Cómo instalar:
 
 Para poder ejecutar el servidor se debe importar como proyecto en Spring Tool Suite 4.0. Después ejecutar como aplicación spring boot.
 Se debe tener instalado JRE 1.8.
