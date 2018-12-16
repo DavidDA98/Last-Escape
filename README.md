@@ -108,7 +108,7 @@ Además también se tendrá en cuenta el tiempo que han tardado en escapar. De e
 
 ## 12. Diagrama de Clases:
 
-![DiagramaClases](/Imagenes/diagrama_clases.png)
+![DiagramaClases](/Imagenes/diagrama_clases2.png)
 
 ## 13. Protocolo WebSockets:
 
