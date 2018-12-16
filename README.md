@@ -1,5 +1,7 @@
 ![Logo](/Imagenes/LogoProvisional.png)
 
+Vídeo demostración: https://www.youtube.com/watch?v=H6M2r9LwB78
+
 # Índice
 #### 1. Autores.
 #### 2. Descripción del Juego.
@@ -13,7 +15,8 @@
 #### 10. Matchmaking.
 #### 11. Navegación de Pantallas.
 #### 12. Diagrama de Clases.
-#### 13. Cómo instalar.
+#### 13. Protocolo WebSockets.
+#### 14. Cómo instalar.
 
 ## 1. Autores:
 
@@ -107,9 +110,15 @@ Además también se tendrá en cuenta el tiempo que han tardado en escapar. De e
 
 ## 12. Diagrama de Clases:
 
-![DiagramaClases](/Imagenes/diagrama_clases.png)
+![DiagramaClases](/Imagenes/diagrama_clases2.png)
 
-## 13. Cómo instalar:
+## 13. Protocolo WebSockets:
+
+Para realizar mensajes entre los clientes y el servidor mediante WebSockets, se ha usado el siguiente protocolo. Se ha usado una cadena en formato JSON que contiene un campo llamado "metodo" que almacena el tipo de mensaje que es. El servidor y los clientes leen primero este campo y actúan en consecuencia.
+
+## 14. Cómo instalar:
 
 Para poder ejecutar el servidor se debe importar como proyecto en Spring Tool Suite 4.0. Después ejecutar como aplicación spring boot.
 Se debe tener instalado JRE 1.8.
+
+Por último, se debe modificar el archivo application.properties cambiando la IP a tu IP local y el puerto a uno de tu elección.

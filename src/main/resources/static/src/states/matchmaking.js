@@ -3,17 +3,6 @@ LastEscape.matchmakingState = function(game) {
 }
 
 LastEscape.matchmakingState.prototype = {
-		
-	init: function() {
-		getNumPlayers(function (numPlayers) {
-			if (numPlayers.length > 1) {
-				console.log ('==========================================================');
-				console.log ('= El servidor está lleno. Vuelve a intentarlo más tarde. =');
-				console.log ('==========================================================');
-				game.state.start('selectCharacterState');
-			}
-		});
-	},
 
     preload: function() {
 		game.add.tileSprite(0, 0, 1280, 720, 'fondoDesenfocado');
@@ -24,37 +13,25 @@ LastEscape.matchmakingState.prototype = {
     },
 
     create: function() {
-    	createPlayer();
+    	var msg = {metodo: "createPlayer", skin: game.skin + 'pistola'};
+    	game.connection.send(JSON.stringify(msg));
     },
 
     update: function() {
-    	getNumPlayers(function (numPlayers) {
-			if (numPlayers.length === 2) {
-				console.log ('##### COMIENZA EL JUEGO #####');
+    	var msg = {metodo: "getMatchmakingState"};
+		game.connection.send(JSON.stringify(msg));
+
+		if (game.jugador1 !== undefined) {
+			if (game.gameState == 1) {
+				var msg = {metodo: "getGameState", id: game.jugador1.id};
+				game.connection.send(JSON.stringify(msg));
 				game.state.start('preloadLevelState');
 			}
-		});
+			
+			if (game.jugadoresOnline == game.jugadoresNecesarios) {
+				var msg = {metodo: "comenzarJuego"};
+		    	game.connection.send(JSON.stringify(msg));
+			}
+		}
     },
-}
-
-function getNumPlayers(callback) {
-	$.ajax({
-		url: window.location.href + '/LastEscape',
-		async: false,
-	}).done(function (data) {
-		callback(data);
-	})
-}
-
-function createPlayer() {
-	$.ajax({
-		method: "POST",
-		url: window.location.href + '/LastEscape',
-		processData: false,
-		headers: {
-			"Content-Type": "application/json"
-		},
-	}).done(function (data) {
-		game.jugador1 = data;
-	})
 }

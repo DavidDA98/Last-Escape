@@ -18,12 +18,12 @@ LastEscape.menuState.prototype = {
     },
 
     update: function() {
-        
+    	
     },
 }
 
 function botonNuevaPartida () {
-    game.state.start('selectMapState');
+	game.state.start('selectMapState');
 }
 
 function botonAyuda () {

@@ -13,6 +13,7 @@ LastEscape.bootState.prototype = {
 
     create: function() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.stage.disableVisibilityChange = true;
         game.state.start('preloadState');
     },
 
