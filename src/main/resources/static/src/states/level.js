@@ -236,6 +236,7 @@ LastEscape.levelState.prototype = {
     },
 
     update: function() {
+    	//Movimiento
     	if (jugadorVivo) {
     		playerMovement();
     	}
@@ -268,41 +269,7 @@ LastEscape.levelState.prototype = {
         }
 
         //Colisiones
-        game.physics.arcade.collide(player1, capa);
-        game.physics.arcade.collide(bullets, capa, function(bullets){
-            bullets.kill();
-        });
-        game.physics.arcade.collide(bullets, player1, function(p, bullets){
-            player1.vida -= bullets.daño;
-            actualizarVida();
-            bullets.kill();
-        });
-        game.physics.arcade.collide(bullets, grupoJugadores, function(bullets){
-            bullets.kill();
-        });
-        game.physics.arcade.overlap(player1, salida, acabarPartida);
-        game.physics.arcade.overlap(player1, inventarios, colisionInventario);
-        game.physics.arcade.overlap(player1, generador, controladorGenerador);
-        game.physics.arcade.overlap(player1, salaDeControl, controladorSala);
-        game.physics.arcade.overlap(hit, grupoJugadores, function(p1, p2){
-            p2.vida -= 10;
-        });
-        game.physics.arcade.overlap(player1, grupoCadaveres, controladorCadaveres);
-
-        if (!game.physics.arcade.overlap(player1, inventarios, colisionInventario) && inventarioAbierto) {
-            mostrarInventario(0);
-        }
-        
-        if (game.player2) {
-        	game.player2.visible = false;
-        }
-        
-        if (game.jugadoresOnline > 2) {
-        	game.player3.visible = false;
-        }
-        if (game.jugadoresOnline > 3) {
-        	game.player4.visible = false;
-        }
+        checkCollisions();
 
         //Arma
         if (cargador > 0 && fireButton.isDown && jugadorVivo) {
@@ -311,21 +278,20 @@ LastEscape.levelState.prototype = {
         if (rKey.isDown && cargador == 0 && cargadores != 0) {
             recargar();
         }
-
+        
+        //Vision de linterna
         calcularVision();
-
+        
+        //Si no está interactuando con un inventario, permitir al jugador usar sus objetos
         if (!inventarioAbierto) {
             controlesInventario();
         }
-
+        
+        //Controlador de las pilas
         if (player1.bateria > 0 && game.time.now > tiempoBateria) {
             player1.bateria -= 1;
             tiempoBateria += 6666;
             barraBateria.previous(1);
-        }
-
-        if (player1.puedeSalir === false) {
-            game.physics.arcade.collide(player1, bloqueoPuertas);
         }
 
         if (player1.vida <= 0) {
@@ -348,48 +314,35 @@ LastEscape.levelState.prototype = {
     }
 }
 
-function playerMovement () {
-    player1.body.velocity.x = 0;
-    player1.body.velocity.y = 0;
+function checkCollisions() {
+	game.physics.arcade.collide(player1, capa);
+    game.physics.arcade.collide(bullets, capa, function(bullets){
+        bullets.kill();
+    });
+    game.physics.arcade.collide(bullets, player1, function(p, bullets){
+        player1.vida -= bullets.daño;
+        actualizarVida();
+        bullets.kill();
+    });
+    game.physics.arcade.collide(bullets, grupoJugadores, function(bullets){
+        bullets.kill();
+    });
+    game.physics.arcade.overlap(player1, salida, acabarPartida);
+    game.physics.arcade.overlap(player1, inventarios, colisionInventario);
+    game.physics.arcade.overlap(player1, generador, controladorGenerador);
+    game.physics.arcade.overlap(player1, salaDeControl, controladorSala);
+    game.physics.arcade.overlap(hit, grupoJugadores, function(p1, p2){
+        p2.vida -= 10;
+    });
+    game.physics.arcade.overlap(player1, grupoCadaveres, controladorCadaveres);
 
-    if (shiftKey.isDown){
-        vel = 50;
+    if (!game.physics.arcade.overlap(player1, inventarios, colisionInventario) && inventarioAbierto) {
+        mostrarInventario(0);
     }
-    else {
-        vel = 0;
+    
+    if (player1.puedeSalir === false) {
+        game.physics.arcade.collide(player1, bloqueoPuertas);
     }
-
-    if (wKey.isDown) {
-        player1.body.velocity.y = -100 - vel;
-        if(!walk.isPlaying){
-            walk.play(10, true);
-        }
-    }
-    else if (sKey.isDown) {
-        player1.body.velocity.y = 100 + vel;
-        if(!walk.isPlaying){
-            walk.play(10, true);
-        }
-    }
-
-    if (aKey.isDown) {
-        player1.body.velocity.x = -100 - vel;
-        if(!walk.isPlaying){
-            walk.play(10, true);
-        }
-    }
-    else if (dKey.isDown) {
-        player1.body.velocity.x = 100 + vel;
-        if(!walk.isPlaying){
-            walk.play(10, true);
-        }
-    }
-
-    if(!wKey.isDown && !sKey.isDown && !aKey.isDown && !dKey.isDown) {
-        walk.stop(true);
-    }
-
-    player1.rotation = game.physics.arcade.angleToPointer(player1);
 }
 
 function updateOtherPlayers() {
@@ -425,49 +378,6 @@ function updateOtherPlayers() {
     }
 }
 
-//Dispara una bala y establece el tiempo de espera hasta la siguiente
-function fireBullet() {
-    if(game.time.now > bulletTime) {
-        bullet = bullets.getFirstExists(false);
-        if(bullet) {
-            bullet.reset(player1.x, player1.y);
-            bullet.rotation = game.physics.arcade.angleToPointer(bullet);
-            cargador = cargador -1;
-            
-            switch(player1.armas[0]) {
-	            case "pistola":
-	            	velocidad = 300;
-	            	bulletTime = game.time.now + 600;
-	            	bullet.daño = 40;
-	                balaPistola.play();
-	            	break;
-	            case "subfusil":
-	            	velocidad = 400;
-	            	bulletTime = game.time.now + 100;
-	            	bullet.daño = 10;
-	            	balaSubfusil.play();
-	            	break;
-	            case "fusil":
-	            	velocidad = 400;
-	            	bulletTime = game.time.now + 200;
-	            	bullet.daño = 20;
-	            	balaFusil.play();
-	            	break;
-	            case "ballesta":
-	            	velocidad = 200;
-	            	bulletTime = game.time.now + 6000;
-	            	bullet.daño = 100;
-	            	balaBallesta.play();
-	            	break;
-            }
-            
-            game.physics.arcade.moveToPointer(bullet, velocidad);
-            
-            putDisparo(game.input.worldX, game.input.worldY, bullet.daño, velocidad);
-        }
-    }
-}
-
 function fireBulletOtherPlayer(balaX, balaY, jugX, jugY, daño, velocidad) {
 	bullet = bullets.getFirstExists(false);
 	if(bullet) {
@@ -492,141 +402,6 @@ function fireBulletOtherPlayer(balaX, balaY, jugX, jugY, daño, velocidad) {
     }
 }
 
-function recargar() {
-    cargador = cargador +10;
-    cargadores = cargadores - 1;
-    
-    switch(player1.armas[0]) {
-        case "pistola":
-            recargarPistola.play();
-        	break;
-        case "subfusil":
-        	recargarSubfusil.play();
-        	break;
-        case "fusil":
-        	recargarFusil.play();
-        	break;
-        case "ballesta":
-        	recargarBallesta.play();
-        	break;
-    }
-}
-
-//Proyecta rayos desde el jugador hasta que colisionen con las paredes, despues los une para crear una máscara
-function calcularVision() {
-    
-    if (jugadorVivo) {
-        anguloRaton = Math.atan2(player1.y-game.input.worldY,player1.x-game.input.worldX);
-    }
-
-    testP2 = true;
-    testP3 = true;
-    testP4 = true;
-
-    longitudRayos = 120 + 5 * player1.bateria;
-
-    mascaraVision.x = player1.x;
-    mascaraVision.y = player1.y;
-
-    mascaraVision.clear();
-    mascaraVision.lineStyle(2, 0xffffff, 1);
-    mascaraVision.beginFill(0xffff00);
-    mascaraVision.moveTo(0,0);
-    for(var i = 0; i<rayos; i++){	
-        var anguloEntreRayos = anguloRaton-(FOV/2)+(FOV/rayos)*i
-        var xFinal = player1.x;
-        var yFinal = player1.y;
-        for(var j= 1; j<=longitudRayos; j += 1){
-            var xActual = Math.round(player1.x-(2*j)*Math.cos(anguloEntreRayos));
-            var yActual = Math.round(player1.y-(2*j)*Math.sin(anguloEntreRayos));
-            testPlayers(xActual, yActual);
-            if(paredesBMP.getPixel32(xActual,yActual) == 0){
-                xFinal = xActual;
-                yFinal = yActual;
-            }
-            else{
-                mascaraVision.lineTo(xFinal - player1.x,yFinal - player1.y);
-                break;
-            }
-        }
-        mascaraVision.lineTo(xFinal - player1.x,yFinal - player1.y);
-    }
-    mascaraVision.lineTo(0,0); 
-    mascaraVision.endFill();
-}
-
-function testPlayers(x, y) {
-    if (testP2 == true && game.jugador2.muerto == 0) {
-        if (x >= game.player2.x - 31 && x < game.player2.x + 36 && y >= game.player2.y - 28 && y < game.player2.y + 29) {
-        	game.player2.visible = true;
-            testP2 = false;
-        }
-    }
-
-    if (testP3 == true && game.jugadoresOnline > 2 && game.jugador3.muerto == 0) {
-        if (x >= game.player3.x - 31 && x < game.player3.x + 36 && y >= game.player3.y - 28 && y < game.player3.y + 29) {
-        	game.player3.visible = true;
-            testP3 = false;
-        }
-    }
-
-    if (testP4 == true && game.jugadoresOnline > 3 && game.jugador4.muerto == 0) {
-        if (x >= game.player4.x - 31 && x < game.player4.x + 36 && y >= game.player4.y - 28 && y < game.player4.y + 29) {
-        	game.player4.visible = true;
-            testP4 = false;
-        }
-    }
-}
-
-//Lee los datos del inventario del jugador y los muestra por pantalla
-function renderInventario() {
-    for (var i = 0; i < 4; i++) {
-        objeto = player1.items[i];
-        if (spriteItem[i] !== undefined) {
-            spriteItem[i].kill();
-        }
-        if (objeto !== 'vacio') {
-            spriteItem[i] = game.add.sprite(829 + 80*i, 648, objeto);
-            spriteItem[i].scale.setTo(0.3, 0.3);
-            spriteItem[i].fixedToCamera = true;
-        }
-    }
-}
-
-function renderArmas() {
-    arma = player1.armas[0];
-    if (spriteArma[0] !== undefined) {
-        spriteArma[0].kill();
-    }
-    if (arma !== 'vacio') {
-        spriteArma[0] = game.add.sprite(1144, 602, arma);
-        spriteArma[0].scale.setTo(0.6, 0.6);
-        spriteArma[0].fixedToCamera = true;
-    }
-
-    arma = player1.armas[1];
-    if (spriteArma[1] !== undefined) {
-        spriteArma[1].kill();
-    }
-    if (arma !== 'vacio') {
-        spriteArma[1] = game.add.sprite(1205, 547, arma);
-        spriteArma[1].scale.setTo(0.3, 0.3);
-        spriteArma[1].fixedToCamera = true;
-    }
-    
-    player1.loadTexture(game.skin + player1.armas[0]);
-	game.jugador1.skin = player1.key;
-}
-
-function cambiarArma() {
-	if (player1.armas[0] !== 'vacio' && player1.armas[1] !== 'vacio') {
-		var temp = player1.armas[0];
-		player1.armas[0] = player1.armas[1];
-		player1.armas[1] = temp;
-		renderArmas();
-	}
-}
-
 //Coloca todos los inventario que contienen objetos por el mapa
 function generarInventarios(tile) {
     if(tile.index === 0) {
@@ -642,248 +417,6 @@ function generarInventarios(tile) {
 function llenarInventarios() {
     for (var i = 0; i < 64; i++) {
         inventarios[i].contenido = i;
-    }
-}
-
-//Controles para interaccionar con los inventarios
-function colisionInventario(player, inventario) {
-    if (eKey.isDown){
-        if (!esperarE) {
-            mostrarInventario(0, inventario.contenido);
-            esperarE = true;
-        }
-    }
-
-    if (key1.isDown && inventarioAbierto){
-        if (!esperar1) {
-            mostrarInventario(1, inventario.contenido, 0);
-            esperar1 = true;
-        }
-    }
-
-    if (key2.isDown && inventarioAbierto){
-        if (!esperar2) {
-            mostrarInventario(1, inventario.contenido, 1);
-            esperar2 = true;
-        }
-    }
-
-    if (!listaArmas.includes(game.listaObjetos[inventario.contenido])) {
-    	if (key3.isDown && inventarioAbierto){
-            if (!esperar3) {
-                mostrarInventario(1, inventario.contenido, 2);
-                esperar3 = true;
-            }
-        }
-
-        if (key4.isDown && inventarioAbierto){
-            if (!esperar4) {
-                mostrarInventario(1, inventario.contenido, 3);
-                esperar4 = true;
-            }
-        }
-    }
-
-    if (eKey.isUp) {
-        esperarE = false;
-    }
-
-    if (key1.isUp) {
-        esperar1 = false;
-    }
-
-    if (key2.isUp) {
-        esperar2 = false;
-    }
-
-    if (key3.isUp) {
-        esperar3 = false;
-    }
-
-    if (key4.isUp) {
-        esperar4 = false;
-    }
-}
-
-//Controles del inventario del jugador
-function controlesInventario() {
-    if (key1.isDown && player1.items[0] !== 'vacio'){
-        if (!esperar1) {
-            usarItem(0);
-        }
-    }
-
-    if (key2.isDown && player1.items[1] !== 'vacio'){
-        if (!esperar2) {
-            usarItem(1);
-        }
-    }
-
-    if (key3.isDown && player1.items[2] !== 'vacio'){
-        if (!esperar3) {
-            usarItem(2);
-        }
-    }
-
-    if (key4.isDown && player1.items[3] !== 'vacio'){
-        if (!esperar4) {
-            usarItem(3);
-        }
-    }
-
-    if (key1.isUp) {
-        esperar1 = false;
-    }
-
-    if (key2.isUp) {
-        esperar2 = false;
-    }
-
-    if (key3.isUp) {
-        esperar3 = false;
-    }
-
-    if (key4.isUp) {
-        esperar4 = false;
-    }
-}
-
-//Esta funcion controla la logica de los inventarios
-//El modo 0 abre o cierra el inventario, dependiendo de como este este, no requiere el parametro pos
-//El modo 1 intercambia el objeto del inventario del jugador en la posicion pos con el objeto mostrado, requiere de todos los parametros
-function mostrarInventario(modo, indice, pos) {
-    if(modo === 0) {
-        if (!inventarioAbierto) {
-            spriteCuadro = game.add.sprite(609, 329, 'cuadroInv');
-            spriteCuadro.fixedToCamera = true;
-
-            if (game.listaObjetos[indice] !== 'vacio') {
-                spriteObjeto = game.add.sprite(618, 338, game.listaObjetos[indice]);
-                spriteObjeto.scale.setTo(0.3, 0.3);
-                spriteObjeto.fixedToCamera = true;
-            }
-
-            inventarioAbierto = true;
-        } else {
-        	if (spriteObjeto !== undefined) {
-                spriteObjeto.kill();
-                spriteObjeto.key = undefined;
-        	}
-            spriteCuadro.kill();
-            inventarioAbierto = false;
-        }
-    }
-    
-    if(modo === 1) {
-    	if (listaArmas.includes(game.listaObjetos[indice])) {
-    		if(player1.armas[pos] === 'vacio') {
-    			player1.armas[pos] = game.listaObjetos[indice];
-    			game.listaObjetos[indice] = 'vacio';
-    			mostrarInventario(0);
-    			renderArmas();
-            } else {
-            	game.listaObjetos[indice] = player1.armas[pos];
-                player1.armas[pos] = spriteObjeto.key;
-                spriteObjeto.kill();
-                spriteObjeto.key = undefined;
-                
-                spriteObjeto = game.add.sprite(618, 338, game.listaObjetos[indice]);
-                spriteObjeto.scale.setTo(0.3, 0.3);
-                spriteObjeto.fixedToCamera = true;
-                renderArmas();
-            }
-    	} else {
-    		if(player1.items[pos] === 'vacio') {
-                player1.items[pos] = game.listaObjetos[indice];
-                game.listaObjetos[indice] = 'vacio';
-                mostrarInventario(0);
-                renderInventario();
-            } else {
-                if (game.listaObjetos[indice] !== 'vacio') {
-                    game.listaObjetos[indice] = player1.items[pos];
-                    player1.items[pos] = spriteObjeto.key;
-                    spriteObjeto.kill();
-                    spriteObjeto.key = undefined;
-                } else {
-                    game.listaObjetos[indice] = player1.items[pos];
-                    player1.items[pos] = 'vacio';
-                }
-                spriteObjeto = game.add.sprite(618, 338, game.listaObjetos[indice]);
-                spriteObjeto.scale.setTo(0.3, 0.3);
-                spriteObjeto.fixedToCamera = true;
-                renderInventario();
-            }
-    	}
-    	
-    	putItem(indice);
-    }
-}
-
-//Esta función consume los objetos y realiza sus efectos
-function usarItem(pos) {
-    switch(player1.items[pos]) {
-        case 'medicina':
-            if (player1.vida > 50) {
-                player1.vida = 100;
-            } else {
-                player1.vida += 50;
-            }
-            actualizarVida()
-            player1.items[pos] = 'vacio';
-            break;
-        case 'botiquin':
-            player1.vida = 100;
-            actualizarVida()
-            player1.items[pos] = 'vacio';
-            break;
-        case 'pilas':
-            player1.bateria = 9;
-            barraBateria.frame = 9;
-            tiempoBateria = game.time.now + 6666;
-            player1.items[pos] = 'vacio';
-            break;
-        case 'balas':
-            cargadores = cargadores + 1;
-            player1.items[pos] = 'vacio';
-            break;
-    }
-    renderInventario();
-}
-
-//Funcion que controla la barra de vida
-function actualizarVida() {
-    if (player1.vida < 10) {
-        barraVida.frame = 0;
-    }
-    if (player1.vida >= 10 && player1.vida < 20) {
-        barraVida.frame = 1;
-    }
-    if (player1.vida >= 20 && player1.vida < 30) {
-        barraVida.frame = 2;
-    }
-    if (player1.vida >= 30 && player1.vida < 40) {
-        barraVida.frame = 3;
-    }
-    if (player1.vida >= 40 && player1.vida < 50) {
-        barraVida.frame = 4;
-    }
-    if (player1.vida >= 50 && player1.vida < 60) {
-        barraVida.frame = 5;
-    }
-    if (player1.vida >= 60 && player1.vida < 70) {
-        barraVida.frame = 6;
-    }
-    if (player1.vida >= 70 && player1.vida < 80) {
-        barraVida.frame = 7;
-    }
-    if (player1.vida >= 80 && player1.vida < 90) {
-        barraVida.frame = 8;
-    }
-    if (player1.vida >= 90 && player1.vida < 100) {
-        barraVida.frame = 9;
-    }
-    if (player1.vida === 100) {
-        barraVida.frame = 10;
     }
 }
 
@@ -1029,55 +562,4 @@ function acabarPartida () {
 	game.jugador1.salida = 1;
 	putPlayer();
     game.state.start('resultsState');
-}
-
-//Funciones para interacctuar con el servidor
-function getGameState() {
-	var msg = {metodo: "getGameState"};
-	game.connection.send(JSON.stringify(msg));
-}
-
-function putPlayer() {
-	game.jugador1.x = player1.x;
-	game.jugador1.y = player1.y;
-	game.jugador1.rotacion = player1.rotation;
-	if (player1.vida > 0) {
-		game.jugador1.muerto = 0;
-	} else {
-		game.jugador1.muerto = 1;
-	}
-	
-	var msg = {metodo: "putPlayer", jugador: game.jugador1};
-	game.connection.send(JSON.stringify(msg));
-}
-
-function putItem(index) {
-	var msg = {metodo: "putItem", indice: index, item: game.listaObjetos[index]};
-	game.connection.send(JSON.stringify(msg));
-}
-
-function putDisparo(x, y, daño, velocidad) {
-    game.disparo = {x: x, y: y, daño: daño, velocidad: velocidad};
-    var msg = {metodo: "putDisparo", id: game.jugador1.id, disparo: game.disparo};
-    game.connection.send(JSON.stringify(msg));
-}
-
-function getID() {
-	var msg = {metodo: "getId"};
-	game.connection.send(JSON.stringify(msg));
-}
-
-function putFusibles() {
-	var msg = {metodo: "putFusibles", fusiblesRestantes: fusiblesRestantes};
-	game.connection.send(JSON.stringify(msg));
-}
-
-function sendCadaver(x, y, items) {
-	var msg = {metodo: "sendCadaver", x: x, y: y, items: items};
-	game.connection.send(JSON.stringify(msg));
-}
-
-function cadaverDestruido(x, y, item) {
-	var msg = {metodo: "cadaverDestruido", x: x, y: y, item: item};
-	game.connection.send(JSON.stringify(msg));
 }
